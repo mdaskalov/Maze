@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  Maze
 //
-//  Created by Mike Daskaloff on 05.03.17.
+//  Created by Milko Daskalov on 05.03.17.
 //  Copyright © 2017 Milko Daskalov. All rights reserved.
 //
 

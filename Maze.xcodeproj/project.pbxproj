@@ -15,6 +15,8 @@
 		2743AD5F1E6C282E00F45774 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2743AD5E1E6C282E00F45774 /* Assets.xcassets */; };
 		2743AD621E6C282E00F45774 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2743AD601E6C282E00F45774 /* Main.storyboard */; };
 		2743AD6D1E6C282E00F45774 /* MazeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2743AD6C1E6C282E00F45774 /* MazeTests.swift */; };
+		2743AD781E6C28D200F45774 /* MazeTileSet.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2743AD771E6C28D200F45774 /* MazeTileSet.sks */; };
+		2743AD7C1E6C2F1100F45774 /* MazeTileMapNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2743AD7B1E6C2F1100F45774 /* MazeTileMapNode.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +42,8 @@
 		2743AD681E6C282E00F45774 /* MazeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MazeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2743AD6C1E6C282E00F45774 /* MazeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MazeTests.swift; sourceTree = "<group>"; };
 		2743AD6E1E6C282E00F45774 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2743AD771E6C28D200F45774 /* MazeTileSet.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MazeTileSet.sks; sourceTree = "<group>"; };
+		2743AD7B1E6C2F1100F45774 /* MazeTileMapNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MazeTileMapNode.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,10 +86,12 @@
 			isa = PBXGroup;
 			children = (
 				2743AD541E6C282E00F45774 /* AppDelegate.swift */,
-				2743AD561E6C282E00F45774 /* GameScene.sks */,
 				2743AD581E6C282E00F45774 /* Actions.sks */,
+				2743AD771E6C28D200F45774 /* MazeTileSet.sks */,
+				2743AD561E6C282E00F45774 /* GameScene.sks */,
 				2743AD5A1E6C282E00F45774 /* GameScene.swift */,
 				2743AD5C1E6C282E00F45774 /* ViewController.swift */,
+				2743AD7B1E6C2F1100F45774 /* MazeTileMapNode.swift */,
 				2743AD5E1E6C282E00F45774 /* Assets.xcassets */,
 				2743AD601E6C282E00F45774 /* Main.storyboard */,
 				2743AD631E6C282E00F45774 /* Info.plist */,
@@ -185,6 +191,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2743AD781E6C28D200F45774 /* MazeTileSet.sks in Resources */,
 				2743AD571E6C282E00F45774 /* GameScene.sks in Resources */,
 				2743AD5F1E6C282E00F45774 /* Assets.xcassets in Resources */,
 				2743AD591E6C282E00F45774 /* Actions.sks in Resources */,
@@ -209,6 +216,7 @@
 				2743AD5D1E6C282E00F45774 /* ViewController.swift in Sources */,
 				2743AD5B1E6C282E00F45774 /* GameScene.swift in Sources */,
 				2743AD551E6C282E00F45774 /* AppDelegate.swift in Sources */,
+				2743AD7C1E6C2F1100F45774 /* MazeTileMapNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,6 +415,7 @@
 				2743AD731E6C282E00F45774 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2743AD741E6C282E00F45774 /* Build configuration list for PBXNativeTarget "MazeTests" */ = {
 			isa = XCConfigurationList;
@@ -415,6 +424,7 @@
 				2743AD761E6C282E00F45774 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

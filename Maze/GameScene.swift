@@ -2,7 +2,7 @@
 //  GameScene.swift
 //  Maze
 //
-//  Created by Mike Daskaloff on 05.03.17.
+//  Created by Milko Daskalov on 05.03.17.
 //  Copyright © 2017 Milko Daskalov. All rights reserved.
 //
 
@@ -10,55 +10,57 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
+    let boxSize = 4
+    let boxMapSize = 23
     
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+    private var maze: MazeTileMapNode?
+    private var touchPos: CGPoint?
     
     override func didMove(to view: SKView) {
-        
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
+        if let label = self.childNode(withName: "//helloLabel") as? SKLabelNode {
+            label.run(SKAction.fadeOut(withDuration: 2.0))
         }
+                
+        let maze = MazeTileMapNode(columns: boxMapSize, rows: boxMapSize, boxSize: boxSize)
         
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
+        maze.position.x = 0
+        maze.position.y = 0
+        self.addChild(maze)
+        self.maze = maze
             
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(M_PI), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
+        self.maze = maze
+        touchPos = maze.position
+        
+        maze.cutMaze()
     }
-    
-    
+
     func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
+        touchPos=pos
     }
     
     func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
+        if (touchPos != nil) {
+            let moveBy = CGVector(dx: pos.x - touchPos!.x, dy: pos.y - touchPos!.y)
+            //let moveDir = CGFloat(atan2f(Float(moveBy.dx),Float(-moveBy.dy)))
+            maze?.position.x += moveBy.dx
+            maze?.position.y += moveBy.dy
+            touchPos = pos
         }
     }
     
     func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
+    }
+    
+    func zoom(by: CGPoint) {
+        let decrement = by.y / 12
+        let mazeScale = maze!.xScale
+        if (mazeScale-decrement) > 0.05 {
+          maze?.xScale -= decrement
+          maze?.yScale -= decrement
+        }
+        else {
+            maze?.xScale = 0.05
+            maze?.yScale = 0.05
         }
     }
     
@@ -76,15 +78,10 @@ class GameScene: SKScene {
     
     override func keyDown(with event: NSEvent) {
         switch event.keyCode {
-        case 0x31:
-            if let label = self.label {
-                label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-            }
         default:
             print("keyDown: \(event.characters!) keyCode: \(event.keyCode)")
         }
     }
-    
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
