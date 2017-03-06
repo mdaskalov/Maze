@@ -10,14 +10,14 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    let boxSize = 4
-    let boxMapSize = 23
+    let boxSize = 3
+    let boxMapSize = 30
     
     private var maze: MazeTileMapNode?
     private var touchPos: CGPoint?
     
     override func didMove(to view: SKView) {
-        if let label = self.childNode(withName: "//helloLabel") as? SKLabelNode {
+        if let label = self.childNode(withName: "//readyLabel") as? SKLabelNode {
             label.run(SKAction.fadeOut(withDuration: 2.0))
         }
                 

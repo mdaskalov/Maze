@@ -24,6 +24,7 @@ class MazeTileMapNode: SKTileMapNode {
     }
     
     enum TileType {
+        case None
         case Center
         case UpEdge
         case UpperRightEdge
@@ -71,6 +72,9 @@ class MazeTileMapNode: SKTileMapNode {
         let tilePrefix = groupPrefix + "_Grid_"
         
         switch type {
+        case .None:
+            setTileGroup(nil, forColumn: column, row: row)
+            return
         case .Center:
             rule = "Center"
             tile = "Center"
@@ -96,8 +100,8 @@ class MazeTileMapNode: SKTileMapNode {
             rule = "Left Edge"
             tile = "Left"
         case .UpperLeftEdge:
-            rule = "Upper Left Corner"
-            tile = "UpLeftInterior"
+            rule = "Upper Left Edge"
+            tile = "UpLeft"
         case .UpperRightCorner:
             rule = "Upper Right Corner"
             tile = "UpRightInterior"
@@ -136,6 +140,30 @@ class MazeTileMapNode: SKTileMapNode {
         setTile(type: .LowerRightCorner, column: tileColumn+boxSize, row: tileRow, group: group)
     }
     
+    func checkTileBox(side: Direction, column: Int, row: Int) -> Bool {
+        var tileColumn = column*(boxSize+1)
+        var tileRow = row*(boxSize+1)
+        
+        if tileRow < 0 || tileRow+boxSize >= numberOfRows || tileColumn < 0 || tileColumn+boxSize >= numberOfColumns {
+            return true
+        }
+        
+        switch side {
+        case .Left:
+            tileRow += 1
+        case .Right:
+            tileColumn += boxSize
+            tileRow += 1
+        case .Up:
+            tileColumn += 1
+            tileRow += boxSize
+        case .Down:
+            tileColumn += 1
+        }
+        
+        return (tileGroup(atColumn: tileColumn, row: tileRow) != nil)
+    }
+    
     func cutTileBox(side: Direction, column: Int, row: Int) {
         let tileColumn = column*(boxSize+1)
         let tileRow = row*(boxSize+1)
@@ -145,30 +173,60 @@ class MazeTileMapNode: SKTileMapNode {
             if tileRow < 0 || tileRow+boxSize >= numberOfRows {
                 break
             }
-            let r1 = (side == .Up ? tileRow+boxSize : tileRow)
-            let r2 = (side == .Up ? tileRow+boxSize+1 : tileRow-1)
-            setTile(type: .RightEdge, column: tileColumn, row: r1)
-            setTile(type: .RightEdge, column: tileColumn, row: r2)
+            
+            let leftSide = checkTileBox(side: .Left, column: column, row: row)
+            let leftSideOutside = checkTileBox(side: .Left, column: column, row: (side == .Up ? row+1 : row-1))
+            let rightSide = checkTileBox(side: .Right, column: column, row: row)
+            let rightSideOutside = checkTileBox(side: .Right, column: column, row: (side == .Up ? row+1 : row-1))
+            
+            let outsideEdgeRow = (side == .Up ? tileRow+boxSize+1 : tileRow-1)
+            let insideEdgeRow = (side == .Up ? tileRow+boxSize : tileRow)
+            
+            let leftEdgeInsideNoWall: TileType = (side == .Up ? .LowerRightEdge : .UpperRightEdge)
+            let leftEdgeOutsideNoWall: TileType = (side == .Up ? .UpperRightEdge : .LowerRightEdge)
+            let rightEdgeInsideNoWall: TileType = (side == .Up ? .LowerLeftEdge : .UpperLeftEdge)
+            let rightEdgeOutsideNoWall: TileType = (side == .Up ? .UpperLeftEdge : .LowerLeftEdge)
+            
+            //Left
+            setTile(type: leftSide ? .RightEdge : leftEdgeInsideNoWall, column: tileColumn, row: insideEdgeRow)
+            setTile(type: leftSideOutside ? .RightEdge : leftEdgeOutsideNoWall, column: tileColumn, row: outsideEdgeRow)
+            //Center
             for c in tileColumn+1...tileColumn+boxSize-1 {
-                setTileGroup(nil, forColumn: c, row: r1)
-                setTileGroup(nil, forColumn: c, row: r2)
+                setTile(type: .None, column: c, row: insideEdgeRow)
+                setTile(type: .None, column: c, row: outsideEdgeRow)
             }
-            setTile(type: .LeftEdge, column: tileColumn+boxSize, row: r1)
-            setTile(type: .LeftEdge, column: tileColumn+boxSize, row: r2)
+            //Right
+            setTile(type: rightSide ? .LeftEdge : rightEdgeInsideNoWall, column: tileColumn+boxSize, row: insideEdgeRow)
+            setTile(type: rightSideOutside ? .LeftEdge : rightEdgeOutsideNoWall, column: tileColumn+boxSize, row: outsideEdgeRow)
         case .Left, .Right:
             if tileColumn < 0 || tileColumn+boxSize >= numberOfColumns {
                 break
             }
-            let c1 = (side == .Left ? tileColumn : tileColumn+boxSize)
-            let c2 = (side == .Left ? tileColumn-1 : tileColumn+boxSize+1)
-            setTile(type: .UpEdge, column: c1, row: tileRow)
-            setTile(type: .UpEdge, column: c2, row: tileRow)
+            
+            let upSide = checkTileBox(side: .Up, column: column, row: row)
+            let upSideOutside = checkTileBox(side: .Up, column: (side == .Left ? column-1 : column+1), row: row)
+            let downSide = checkTileBox(side: .Down, column: column, row: row)
+            let downSideOutside = checkTileBox(side: .Down, column: (side == .Left ? column-1 : column+1), row: row)
+
+            let outsideEdgeColumn = (side == .Left ? tileColumn-1 : tileColumn+boxSize+1)
+            let insideEdgeColumn = (side == .Left ? tileColumn : tileColumn+boxSize)
+
+            let upEdgeInsideNoWall: TileType = (side == .Left ? .LowerRightEdge : .LowerLeftEdge)
+            let upEdgeOutsideNoWall: TileType = (side == .Left ? .LowerLeftEdge : .LowerRightEdge)
+            let downEdgeInsideNoWall: TileType = (side == .Left ? .UpperRightEdge : .UpperLeftEdge)
+            let downEdgeOutsideNoWall: TileType = (side == .Left ? .UpperLeftEdge : .UpperRightEdge)
+
+            //Up
+            setTile(type: upSide ? .DownEdge : upEdgeInsideNoWall, column: insideEdgeColumn, row: tileRow+boxSize)
+            setTile(type: upSideOutside ? .DownEdge : upEdgeOutsideNoWall,  column: outsideEdgeColumn, row: tileRow+boxSize)
+            //Center
             for r in tileRow+1...tileRow+boxSize-1 {
-                setTileGroup(nil, forColumn: c1, row: r)
-                setTileGroup(nil, forColumn: c2, row: r)
+                setTileGroup(nil, forColumn: insideEdgeColumn, row: r)
+                setTileGroup(nil, forColumn: outsideEdgeColumn, row: r)
             }
-            setTile(type: .DownEdge, column: c1, row: tileRow+boxSize)
-            setTile(type: .DownEdge, column: c2, row: tileRow+boxSize)
+            //Down
+            setTile(type: downSide ? .UpEdge : downEdgeInsideNoWall, column: insideEdgeColumn, row: tileRow)
+            setTile(type: downSideOutside ? .UpEdge : downEdgeOutsideNoWall, column: outsideEdgeColumn, row: tileRow)
         }
     }
     

@@ -21,11 +21,44 @@ class MazeTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
+    func testHorizontalCut() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        
+        let maze = MazeTileMapNode(columns: 3, rows: 3, boxSize: 3, groupName: "Sand")
+ 
+        for c in 0..<3 {
+            for r in 0..<3 {
+                maze.drawTileBox(column: c, row: r)
+            }
+        }
+        maze.cutTileBox(side: .Up, column: 0, row: 0)
+        maze.cutTileBox(side: .Up, column: 0, row: 1)
+        maze.cutTileBox(side: .Down, column: 1, row: 2)
+        maze.cutTileBox(side: .Down, column: 1, row: 1)
+         
+        //maze.cutTileBox(side: .Left, column: 1, row: 1)
+        maze.cutTileBox(side: .Right, column: 0, row: 1)
     }
-    
+
+    func testVerticalCut() {
+        let maze = MazeTileMapNode(columns: 3, rows: 3, boxSize: 3, groupName: "Sand")
+        
+        for c in 0..<3 {
+            for r in 0..<3 {
+                maze.drawTileBox(column: c, row: r)
+            }
+        }
+        
+        maze.cutTileBox(side: .Right, column: 1, row: 1)
+        maze.cutTileBox(side: .Right, column: 1, row: 0)
+        maze.cutTileBox(side: .Left, column: 1, row: 1)
+        maze.cutTileBox(side: .Left, column: 1, row: 0)
+
+        //maze.cutTileBox(side: .Up, column: 1, row: 0)
+        maze.cutTileBox(side: .Down, column: 1, row: 1)
+    }
+ 
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
