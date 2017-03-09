@@ -50,6 +50,7 @@
     {
       "size" : "98x98",
       "idiom" : "watch",
+      "filename" : "maze_watch1.png",
       "scale" : "2x",
       "role" : "quickLook",
       "subtype" : "42mm"

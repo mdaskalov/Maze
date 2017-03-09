@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		273F239B1E71F6C0000F955B /* MazeTileSet.sks in Resources */ = {isa = PBXBuildFile; fileRef = 273F239A1E71F6C0000F955B /* MazeTileSet.sks */; };
+		273F239D1E71FDA0000F955B /* MazeTileSet.sks in Resources */ = {isa = PBXBuildFile; fileRef = 273F239C1E71FDA0000F955B /* MazeTileSet.sks */; };
 		2743AD551E6C282E00F45774 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2743AD541E6C282E00F45774 /* AppDelegate.swift */; };
 		2743AD571E6C282E00F45774 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2743AD561E6C282E00F45774 /* GameScene.sks */; };
 		2743AD591E6C282E00F45774 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2743AD581E6C282E00F45774 /* Actions.sks */; };
@@ -99,7 +99,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		273F239A1E71F6C0000F955B /* MazeTileSet.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MazeTileSet.sks; sourceTree = "<group>"; };
+		273F239C1E71FDA0000F955B /* MazeTileSet.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MazeTileSet.sks; sourceTree = "<group>"; };
 		2743AD511E6C282E00F45774 /* Maze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Maze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2743AD541E6C282E00F45774 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2743AD561E6C282E00F45774 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -280,7 +280,7 @@
 			isa = PBXGroup;
 			children = (
 				27C450091E6E3229001A5A36 /* InterfaceController.swift */,
-				273F239A1E71F6C0000F955B /* MazeTileSet.sks */,
+				273F239C1E71FDA0000F955B /* MazeTileSet.sks */,
 				27C4500B1E6E3229001A5A36 /* GameScene.sks */,
 				27C4500D1E6E3229001A5A36 /* GameScene.swift */,
 				27C4500F1E6E3229001A5A36 /* ExtensionDelegate.swift */,
@@ -527,7 +527,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				27C450141E6E3229001A5A36 /* Assets.xcassets in Resources */,
-				273F239B1E71F6C0000F955B /* MazeTileSet.sks in Resources */,
+				273F239D1E71FDA0000F955B /* MazeTileSet.sks in Resources */,
 				27C4500C1E6E3229001A5A36 /* GameScene.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

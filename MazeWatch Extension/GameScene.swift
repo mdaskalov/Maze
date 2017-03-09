@@ -22,7 +22,7 @@ class GameScene: SKScene {
             label.run(SKAction.fadeOut(withDuration: 2.0))
         }
         
-        let maze = MazeTileMapNode(columns: boxMapSize, rows: boxMapSize, boxSize: boxSize)
+        let maze = MazeTileMapNode(columns: boxMapSize, rows: boxMapSize, boxSize: boxSize, groupName: "Grass")
         
         maze.position.x = 0
         maze.position.y = 0
@@ -44,8 +44,8 @@ class GameScene: SKScene {
         if (touchPos != nil) {
             let moveBy = CGVector(dx: touchPos!.x - pos.x, dy: touchPos!.y - pos.y)
             //let moveDir = CGFloat(atan2f(Float(moveBy.dx),Float(-moveBy.dy)))
-            camera?.position.x += (moveBy.dx * camera!.xScale)
-            camera?.position.y += (moveBy.dy * camera!.xScale)
+            camera?.position.x += (moveBy.dx * camera!.xScale * 1.5)
+            camera?.position.y += (moveBy.dy * camera!.xScale * 1.5)
             touchPos = pos
         }
     }
