@@ -75,6 +75,10 @@ class InterfaceController: WKInterfaceController, WKCrownDelegate {
         moving = false
     }
     
+    @IBAction func cutMazeSelected() {
+        scene?.cutMaze()
+    }
+    
     @IBAction func panGestureRecognized(_ sender: WKPanGestureRecognizer) {
         let location = CGPoint(x: sender.locationInObject().x, y: -sender.locationInObject().y)
         

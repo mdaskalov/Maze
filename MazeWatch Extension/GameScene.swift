@@ -36,6 +36,10 @@ class GameScene: SKScene {
         maze.cutMaze()
     }
     
+    func cutMaze() {
+        maze?.cutMaze()
+    }
+        
     func touchDown(atPoint pos : CGPoint) {
         touchPos=pos
     }
@@ -54,8 +58,8 @@ class GameScene: SKScene {
     }
     
     func zoom(by: CGFloat) {
-        camera?.xScale = by
-        camera?.yScale = by
+        camera?.xScale = -by * 2
+        camera?.yScale = -by * 2
     }
     
     override func update(_ currentTime: TimeInterval) {
