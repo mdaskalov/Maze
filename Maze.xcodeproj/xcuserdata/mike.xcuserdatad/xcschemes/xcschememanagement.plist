@@ -9,6 +9,21 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>MazePhone.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>MazeWatch (Notification).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
+		<key>MazeWatch.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -18,6 +33,21 @@
 			<true/>
 		</dict>
 		<key>2743AD671E6C282E00F45774</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>27C44FC91E6E1E3E001A5A36</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>27C44FE21E6E1E3E001A5A36</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>27C44FF51E6E3229001A5A36</key>
 		<dict>
 			<key>primary</key>
 			<true/>

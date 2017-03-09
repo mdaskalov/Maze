@@ -6,7 +6,6 @@
 //  Copyright © 2017 Milko Daskalov. All rights reserved.
 //
 
-import Cocoa
 import SpriteKit
 
 class MazeTileMapNode: SKTileMapNode {
