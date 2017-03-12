@@ -18,7 +18,7 @@ class MazeTileMapNode: SKTileMapNode {
     private var processed: [[Bool]]
     
     private var cutPath = Array<MazeTileMapNode.TileBox>()
-    private var cutBox = TileBox(x: 4, y: 4)
+    private var cutBox = TileBox(x: 0, y: 0)
 
     struct TileBox {
         var x: Int
