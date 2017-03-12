@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "MazeTileMapNode.cutMaze() -&gt; ():MazeTileMapNode.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "cutPath.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MazeTileMapNode.emptyBoxAt(MazeTileMapNode.Direction, from : MazeTileMapNode.TileBox) -&gt; MazeTileMapNode.TileBox?:MazeTileMapNode.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "directions[box!.x][box!.y] == nil">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MazeTileMapNode.findEmptyNeighbour(MazeTileMapNode.TileBox) -&gt; (box : MazeTileMapNode.TileBox, direction : MazeTileMapNode.Direction)?:MazeTileMapNode.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MazeTileMapNode.findEmptyNeighbour(MazeTileMapNode.TileBox) -&gt; (box : MazeTileMapNode.TileBox, at : MazeTileMapNode.Direction)?:MazeTileMapNode.swift">
+      </ContextState>
+      <ContextState
+         contextName = "GameScene.drawBox(MazeTileMapNode.TileBox, color : NSColor) -&gt; ():GameScene.swift">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

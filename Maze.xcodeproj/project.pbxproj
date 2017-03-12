@@ -430,7 +430,6 @@
 					};
 					27C44FC91E6E1E3E001A5A36 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = AWYW53XS27;
 						ProvisioningStyle = Automatic;
 					};
 					27C44FE21E6E1E3E001A5A36 = {
@@ -440,7 +439,6 @@
 					};
 					27C44FF51E6E3229001A5A36 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = AWYW53XS27;
 						ProvisioningStyle = Automatic;
 					};
 					27C450011E6E3229001A5A36 = {
@@ -797,7 +795,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = AWYW53XS27;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = MazePhone/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -814,7 +812,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = AWYW53XS27;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = MazePhone/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -905,7 +903,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = AWYW53XS27;
+				DEVELOPMENT_TEAM = "";
 				IBSC_MODULE = MazeWatch_Extension;
 				INFOPLIST_FILE = MazeWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.innersoft.Maze.watchkitapp;
@@ -924,7 +922,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = AWYW53XS27;
+				DEVELOPMENT_TEAM = "";
 				IBSC_MODULE = MazeWatch_Extension;
 				INFOPLIST_FILE = MazeWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.innersoft.Maze.watchkitapp;
