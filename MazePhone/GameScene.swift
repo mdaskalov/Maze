@@ -9,13 +9,15 @@
 import SpriteKit
 
 class GameScene: SKScene {
-    
-    let boxSize = 3
-    let boxMapSize = 30
+    private let boxSize = 3
+    private let boxMapSize = 30
     
     private var maze: MazeTileMapNode?
-     private var cameraScale: CGFloat = 1.0
+    private var cameraScale: CGFloat = 1.0
     
+    private var timer : Timer?
+    private var cutPathNodes = Array<SKSpriteNode>()
+
     override func didMove(to view: SKView) {
         if let label = self.childNode(withName: "//readyLabel") as? SKLabelNode {
             label.run(SKAction.fadeOut(withDuration: 2.0))
@@ -26,10 +28,48 @@ class GameScene: SKScene {
         maze.position.x = 0
         maze.position.y = 0
         
+        self.camera?.setScale(21.0)
         self.addChild(maze)
         self.maze = maze
         
-        maze.cutMaze()
+        resetCut()
+    }
+    
+    func drawBox(_ box: MazeTileMapNode.TileBox, color: UIColor) {
+        if let maze = self.maze {
+            let node = SKSpriteNode(color: color, size: maze.tileBoxSize())
+            node.position = maze.tileBoxCenter(box)
+            node.zPosition = -10
+            
+            self.addChild(node)
+            cutPathNodes.append(node)
+        }
+    }
+    
+    func resetCut() {
+        if let maze = self.maze, cutPathNodes.count == 0 {
+            maze.reset()
+            
+            let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapSize), y: maze.random(boxMapSize))
+            maze.cutStart(at: cutStart)
+            drawBox(cutStart, color: .green)
+            
+            timer?.invalidate()
+            timer = Timer.scheduledTimer(timeInterval: 1.0/60.0, target: self, selector: #selector(GameScene.cutMaze), userInfo: nil, repeats: true)
+        }
+    }
+    
+    func cutMaze() {
+        if let box = maze?.cutStep() {
+            drawBox(box, color: .green)
+        }
+        else if cutPathNodes.count > 0 {
+            let removedBox = cutPathNodes.removeLast()
+            removedBox.removeFromParent()
+        }
+        else {
+            timer?.invalidate()
+        }
     }
     
     func panBegan(location: CGPoint, translation: CGPoint, velocity: CGPoint) {

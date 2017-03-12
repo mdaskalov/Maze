@@ -10,10 +10,13 @@ import XCTest
 @testable import Maze
 
 class MazeTests: XCTestCase {
+    let columns = 10
+    let rows = 10
+    let boxSize = 3
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        // Put setup code here. This method is called before the invocation of each test method in the class.        
     }
     
     override func tearDown() {
@@ -21,42 +24,55 @@ class MazeTests: XCTestCase {
         super.tearDown()
     }
     
+    func reset(_ maze: MazeTileMapNode) {
+        for x in 0..<columns {
+            for y in 0..<rows {
+                maze.drawTileBox(MazeTileMapNode.TileBox(x: x, y: y))
+            }
+        }
+    }
+    
+    func testInBounds() {
+        let maze: MazeTileMapNode = MazeTileMapNode(columns: columns, rows: rows, boxSize: boxSize)
+        
+        XCTAssert(maze.isInBounds(MazeTileMapNode.TileBox(x: 0, y:  0)), "isInBounds true for 0, 0")
+        
+        XCTAssert(!maze.isInBounds(MazeTileMapNode.TileBox(x: -1, y:  0)), "isInBounds false for -1, 0")
+        XCTAssert(!maze.isInBounds(MazeTileMapNode.TileBox(x:  0, y: -1)), "isInBounds false for  0,-1")
+        XCTAssert(!maze.isInBounds(MazeTileMapNode.TileBox(x: -1, y: -1)), "isInBounds false for -1,-1")
+        
+        XCTAssert(!maze.isInBounds(MazeTileMapNode.TileBox(x: columns,   y: rows-1)), "isInBounds false for columns  ,rows-1")
+        XCTAssert(!maze.isInBounds(MazeTileMapNode.TileBox(x: columns-1, y: rows  )), "isInBounds false for columns-1,rows")
+        XCTAssert(!maze.isInBounds(MazeTileMapNode.TileBox(x: columns,   y: rows  )), "isInBounds false for columns  ,rows")
+    }
+    
     func testHorizontalCut() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         
-        let maze = MazeTileMapNode(columns: 3, rows: 3, boxSize: 3, groupName: "Sand")
- 
-        for c in 0..<3 {
-            for r in 0..<3 {
-                maze.drawTileBox(column: c, row: r)
-            }
-        }
-        maze.cutTileBox(side: .Up, column: 0, row: 0)
-        maze.cutTileBox(side: .Up, column: 0, row: 1)
-        maze.cutTileBox(side: .Down, column: 1, row: 2)
-        maze.cutTileBox(side: .Down, column: 1, row: 1)
+        let maze: MazeTileMapNode = MazeTileMapNode(columns: columns, rows: rows, boxSize: boxSize)
+        reset(maze)
+        
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 0, y: 0), side: .Up)
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 0, y: 1), side: .Up)
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 1, y: 2), side: .Down)
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 1, y: 1), side: .Down)
          
-        //maze.cutTileBox(side: .Left, column: 1, row: 1)
-        maze.cutTileBox(side: .Right, column: 0, row: 1)
+        //maze.cutTileBox(MazeTileMapNode.TileBox(x: 1, y: 1), side: .Left)
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 0, y: 1), side: .Right)
     }
 
     func testVerticalCut() {
-        let maze = MazeTileMapNode(columns: 3, rows: 3, boxSize: 3, groupName: "Sand")
+        let maze: MazeTileMapNode = MazeTileMapNode(columns: columns, rows: rows, boxSize: boxSize)
+        reset(maze)
         
-        for c in 0..<3 {
-            for r in 0..<3 {
-                maze.drawTileBox(column: c, row: r)
-            }
-        }
-        
-        maze.cutTileBox(side: .Right, column: 1, row: 1)
-        maze.cutTileBox(side: .Right, column: 1, row: 0)
-        maze.cutTileBox(side: .Left, column: 1, row: 1)
-        maze.cutTileBox(side: .Left, column: 1, row: 0)
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 1, y: 1), side: .Right)
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 1, y: 0), side: .Right)
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 1, y: 1), side: .Left)
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 1, y: 0), side: .Left)
 
-        //maze.cutTileBox(side: .Up, column: 1, row: 0)
-        maze.cutTileBox(side: .Down, column: 1, row: 1)
+        //maze.cutTileBox(MazeTileMapNode.TileBox(x: 1, y: 0), side: .Up)
+        maze.cutTileBox(MazeTileMapNode.TileBox(x: 1, y: 1), side: .Down)
     }
  
     func testPerformanceExample() {

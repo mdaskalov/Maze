@@ -26,6 +26,7 @@
                             <outletCollection property="gestureRecognizers" destination="uQb-40-vBY" appends="YES" id="rtZ-ut-Yt3"/>
                             <outletCollection property="gestureRecognizers" destination="MQE-0x-hIb" appends="YES" id="c1d-Rs-A6Y"/>
                             <outletCollection property="gestureRecognizers" destination="Miu-5F-fZ3" appends="YES" id="0Qi-Qf-h53"/>
+                            <outletCollection property="gestureRecognizers" destination="6Wa-BU-Tn7" appends="YES" id="gSn-Zp-jC3"/>
                         </connections>
                     </view>
                 </viewController>
@@ -45,6 +46,11 @@
                         <action selector="rotateGestureRecognized:" destination="BV1-FR-VrT" id="Z7t-OG-Tp0"/>
                     </connections>
                 </rotationGestureRecognizer>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="6Wa-BU-Tn7">
+                    <connections>
+                        <action selector="longPressGestureRecognized:" destination="BV1-FR-VrT" id="sxR-Zq-B31"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
         </scene>
     </scenes>

@@ -97,6 +97,9 @@ class GameViewController: UIViewController {
         }
     }
     */
+    @IBAction func longPressGestureRecognized(_ sender: UILongPressGestureRecognizer) {
+        scene?.resetCut()
+    }
     
     @IBAction func panGestureRecognized(_ sender: UIPanGestureRecognizer) {
         

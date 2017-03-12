@@ -14,6 +14,16 @@ class MazeTileMapNode: SKTileMapNode {
     private var rows: Int
     private var boxSize: Int
     private var group: String
+    private var directions: [[Direction?]]
+    private var processed: [[Bool]]
+    
+    private var cutPath = Array<MazeTileMapNode.TileBox>()
+    private var cutBox = TileBox(x: 4, y: 4)
+
+    struct TileBox {
+        var x: Int
+        var y: Int
+    }
     
     enum Direction: Int {
         case Left   = 0
@@ -39,11 +49,13 @@ class MazeTileMapNode: SKTileMapNode {
         case UpperLeftCorner
     }
     
-    init(columns: Int, rows: Int, boxSize: Int, tileSetName: String = "MazeGridTileSet", groupName: String = "Cobblestone") {
+    init(columns: Int, rows: Int, boxSize: Int, groupName: String = "Cobblestone", tileSetName: String = "MazeGridTileSet") {
         self.columns = columns
         self.rows = rows
         self.boxSize = boxSize
         self.group = groupName
+        self.directions = Array(repeating: Array<Direction?>(repeating: nil, count: columns), count: rows)
+        self.processed = Array(repeating: Array<Bool>(repeating: false, count: columns), count: rows)
         
         super.init()
         
@@ -61,6 +73,8 @@ class MazeTileMapNode: SKTileMapNode {
         self.rows = 0
         self.boxSize = 3
         self.group = ""
+        self.directions = Array(repeating: Array<Direction?>(repeating: nil, count: columns), count: rows)
+        self.processed = Array(repeating: Array<Bool>(repeating: false, count: columns), count: rows)
         super.init(coder: aDecoder)
     }
     
@@ -122,9 +136,29 @@ class MazeTileMapNode: SKTileMapNode {
         }
     }
     
-    func drawTileBox(column: Int, row: Int, group: String = "") {
-        let tileColumn = column*(boxSize+1)
-        let tileRow = row*(boxSize+1)
+    func random(_ max: Int) -> Int {
+        return Int(arc4random_uniform(UInt32(max)))
+    }
+    
+    func tileBoxCenter(_ box: MazeTileMapNode.TileBox) -> CGPoint  {
+        let tileColumn = box.x*(self.boxSize+1)
+        let tileRow = box.y*(self.boxSize+1)
+        
+        let boxSize = self.tileBoxSize()
+        let center = centerOfTile(atColumn: tileColumn, row: tileRow)
+        
+        let translation = CGAffineTransform(translationX: -tileSize.width/2, y: -tileSize.height/2).translatedBy(x: boxSize.width/2, y: boxSize.height/2)
+        
+        return center.applying(translation)
+    }
+
+    func tileBoxSize() -> CGSize {
+        return tileSize.applying(CGAffineTransform(scaleX: CGFloat(self.boxSize+1), y: CGFloat(self.boxSize+1)))
+    }
+    
+    func drawTileBox(_ box: TileBox, group: String = "") {
+        let tileColumn = box.x*(boxSize+1)
+        let tileRow = box.y*(boxSize+1)
         setTile(type: .UpperLeftCorner, column: tileColumn, row: tileRow+boxSize, group: group)
         setTile(type: .UpperRightCorner, column: tileColumn+boxSize, row: tileRow+boxSize, group: group)
         for c in tileColumn+1...tileColumn+boxSize-1 {
@@ -163,20 +197,29 @@ class MazeTileMapNode: SKTileMapNode {
         return (tileGroup(atColumn: tileColumn, row: tileRow) != nil)
     }
     
-    func cutTileBox(side: Direction, column: Int, row: Int) {
-        let tileColumn = column*(boxSize+1)
-        let tileRow = row*(boxSize+1)
-
+    func cutTileBox(_ box: TileBox, side: Direction) {
+        let tileColumn = box.x*(boxSize+1)
+        let tileRow = box.y*(boxSize+1)
+        
+        if !isInBounds(box) {
+            return
+        }
+        
+        directions[box.x][box.y] = side
+        if let oppositeBox = boxAt(side, from: box) {
+            directions[oppositeBox.x][oppositeBox.y] = oppositeDirection(side)
+        }
+        
         switch side {
         case .Up, .Down:
             if tileRow < 0 || tileRow+boxSize >= numberOfRows {
                 break
             }
             
-            let leftSide = checkTileBox(side: .Left, column: column, row: row)
-            let leftSideOutside = checkTileBox(side: .Left, column: column, row: (side == .Up ? row+1 : row-1))
-            let rightSide = checkTileBox(side: .Right, column: column, row: row)
-            let rightSideOutside = checkTileBox(side: .Right, column: column, row: (side == .Up ? row+1 : row-1))
+            let leftSide = checkTileBox(side: .Left, column: box.x, row: box.y)
+            let leftSideOutside = checkTileBox(side: .Left, column: box.x, row: (side == .Up ? box.y+1 : box.y-1))
+            let rightSide = checkTileBox(side: .Right, column: box.x, row: box.y)
+            let rightSideOutside = checkTileBox(side: .Right, column: box.x, row: (side == .Up ? box.y+1 : box.y-1))
             
             let outsideEdgeRow = (side == .Up ? tileRow+boxSize+1 : tileRow-1)
             let insideEdgeRow = (side == .Up ? tileRow+boxSize : tileRow)
@@ -202,10 +245,10 @@ class MazeTileMapNode: SKTileMapNode {
                 break
             }
             
-            let upSide = checkTileBox(side: .Up, column: column, row: row)
-            let upSideOutside = checkTileBox(side: .Up, column: (side == .Left ? column-1 : column+1), row: row)
-            let downSide = checkTileBox(side: .Down, column: column, row: row)
-            let downSideOutside = checkTileBox(side: .Down, column: (side == .Left ? column-1 : column+1), row: row)
+            let upSide = checkTileBox(side: .Up, column: box.x, row: box.y)
+            let upSideOutside = checkTileBox(side: .Up, column: (side == .Left ? box.x-1 : box.x+1), row: box.y)
+            let downSide = checkTileBox(side: .Down, column: box.x, row: box.y)
+            let downSideOutside = checkTileBox(side: .Down, column: (side == .Left ? box.x-1 : box.x+1), row: box.y)
 
             let outsideEdgeColumn = (side == .Left ? tileColumn-1 : tileColumn+boxSize+1)
             let insideEdgeColumn = (side == .Left ? tileColumn : tileColumn+boxSize)
@@ -229,53 +272,100 @@ class MazeTileMapNode: SKTileMapNode {
         }
     }
     
-    func cutMaze() {
-        var isCut = Array(repeating: Array<Bool>(repeating: false, count: columns), count: rows)
-        var cutPath = Array<(x: Int, y:Int)>(repeating: (x: 0, y: 0), count: 5000)
+    func isInBounds(_ box: TileBox) -> Bool {
+        return box.x >= 0 && box.x < columns && box.y >= 0 && box.y < rows
+    }
+    
+    func oppositeDirection(_ direction: Direction) -> Direction {
+        switch direction {
+        case .Left:  return .Right
+        case .Right: return .Left
+        case .Up:    return .Down
+        case .Down:  return .Up
+        }
         
-        assert(rows>2 && columns>2)
+    }
+    
+    func boxAt(_ direction: Direction, from: TileBox) -> TileBox? {
+        var box = from
         
-        var dir: Direction
-        var x = 0
-        var y = 0
-        var cutPos = 0
-        isCut[x][y] = true
-        cutPath[cutPos] = (x: x, y: y)
+        switch direction {
+        case .Left:  box.x -= 1
+        case .Right: box.x += 1
+        case .Up:    box.y += 1
+        case .Down:  box.y -= 1
+        }
         
-        for c in 0..<columns {
-            for r in 0..<rows {
-                drawTileBox(column: c, row: r)
+        return isInBounds(box) ? box : nil
+    }
+    
+    func emptyBoxAt(_ direction: Direction, from: TileBox) -> TileBox? {
+        let box = boxAt(direction, from: from)
+        let boxIsProcessed = (box == nil || processed[box!.x][box!.y])
+        return boxIsProcessed ? nil : box
+    }
+    
+    func findEmptyNeighbour(_ box: TileBox) -> (box: TileBox, at: Direction)? {
+        if !isInBounds(box) {
+            return nil
+        }
+        
+        processed[box.x][box.y] = true
+
+        let boxAtLeft = emptyBoxAt(.Left, from: box)
+        let boxAtRight = emptyBoxAt(.Right, from: box)
+        let boxAtUp = emptyBoxAt(.Up, from: box)
+        let boxAtDown = emptyBoxAt(.Down, from: box)
+        if boxAtLeft != nil || boxAtRight != nil || boxAtUp != nil || boxAtDown != nil {
+            var dir: Direction
+            var neighbour: TileBox?
+            repeat {
+                dir = Direction(rawValue: random(4))!
+                neighbour = emptyBoxAt(dir, from: box)
+               
+            } while neighbour == nil
+            return (box: neighbour!, at: dir)
+        }
+        else {
+            return nil
+        }
+    }
+    
+    func reset() {
+        for x in 0..<columns {
+            for y in 0..<rows {
+                drawTileBox(TileBox(x: x, y: y))
+                processed[x][y] = false
             }
         }
-
+    }
+    
+    func cutStart(at: TileBox) {
+        cutBox = at
+    }
+    
+    func cutStep() -> TileBox? {
+        if let neighbour = findEmptyNeighbour(cutBox) {
+            //print("move \(cutPath.count+1) from: \(cutBox.x),\(cutBox.y) \(neighbour.at) to: \(neighbour.box.x),\(neighbour.box.y)")
+            
+            cutTileBox(cutBox, side: neighbour.at)
+            
+            cutPath.append(cutBox)
+            cutBox = neighbour.box
+            return cutBox
+        }
+        else if cutPath.count > 0 {
+            cutBox = cutPath.removeLast()
+            //print("back to move \(cutPath.count+1) (\(cutBox.x),\(cutBox.y))")
+        }
+        return nil
+    }
+    
+    func cutMaze() {
+        reset()
+        cutStart(at: TileBox(x: 0, y: 0))
         repeat {
-            if (x > 1 && !isCut[x-1][y]) || (x < columns-1 && !isCut[x+1][y]) ||
-                (y > 1 && !isCut[x][y-1]) || (y < rows-1  && !isCut[x][y+1]) {
-                let ox = x
-                let oy = y
-                repeat {
-                    x = ox
-                    y = oy
-                    dir = Direction(rawValue: Int(arc4random_uniform(4)))!
-                    switch dir {
-                    case .Left:  x -= 1
-                    case .Right: x += 1
-                    case .Up:    y += 1
-                    case .Down:  y -= 1
-                    }
-                } while x < 0 || x >= columns || y < 0 || y >= rows || isCut[x][y]
-                isCut[x][y] = true
-                cutPos += 1
-                cutPath[cutPos] = (x: x, y: y)
-                cutTileBox(side: dir, column: ox, row: oy)
-                print("move \(cutPos) from: \(ox),\(oy) \(dir) to: \(x),\(y)")
-            }
-            else {
-                cutPos -= 1
-                x = cutPath[cutPos].x
-                y = cutPath[cutPos].y
-                print("back to move \(cutPos) (\(x),\(y))")
-            }
-        } while cutPos > 0
+            let _ = cutStep()
+        } while cutPath.count > 0
     }
 }

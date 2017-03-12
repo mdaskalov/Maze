@@ -15,7 +15,7 @@ class InterfaceController: WKInterfaceController, WKCrownDelegate {
     @IBOutlet var skInterface: WKInterfaceSKScene!
     
     var moving = false
-    var value = 1.0
+    var value = 17.0
     var rps = 0.0
     
     var scene: GameScene?
@@ -76,7 +76,7 @@ class InterfaceController: WKInterfaceController, WKCrownDelegate {
     }
     
     @IBAction func cutMazeSelected() {
-        scene?.cutMaze()
+        scene?.resetCut()
     }
     
     @IBAction func panGestureRecognized(_ sender: WKPanGestureRecognizer) {

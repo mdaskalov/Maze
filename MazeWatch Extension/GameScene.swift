@@ -17,6 +17,9 @@ class GameScene: SKScene {
     private var maze: MazeTileMapNode?
     private var touchPos: CGPoint?
     
+    private var timer : Timer?
+    private var cutPathNodes = Array<SKSpriteNode>()
+    
     override func sceneDidLoad() {
         if let label = self.childNode(withName: "//readyLabel") as? SKLabelNode {
             label.run(SKAction.fadeOut(withDuration: 2.0))
@@ -27,19 +30,53 @@ class GameScene: SKScene {
         maze.position.x = 0
         maze.position.y = 0
         
+        self.camera?.setScale(-35.0)
         self.addChild(maze)
         self.maze = maze
         
         self.maze = maze
         touchPos = maze.position
         
-        maze.cutMaze()
+        resetCut()
+    }
+    
+    func drawBox(_ box: MazeTileMapNode.TileBox, color: UIColor) {
+        if let maze = self.maze {
+            let node = SKSpriteNode(color: color, size: maze.tileBoxSize())
+            node.position = maze.tileBoxCenter(box)
+            node.zPosition = -10
+            
+            self.addChild(node)
+            cutPathNodes.append(node)
+        }
+    }
+    
+    func resetCut() {
+        if let maze = self.maze, cutPathNodes.count == 0 {
+            maze.reset()
+            
+            let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapSize), y: maze.random(boxMapSize))
+            maze.cutStart(at: cutStart)
+            drawBox(cutStart, color: .blue)
+            
+            timer?.invalidate()
+            timer = Timer.scheduledTimer(timeInterval: 1.0/60.0, target: self, selector: #selector(GameScene.cutMaze), userInfo: nil, repeats: true)
+        }
     }
     
     func cutMaze() {
-        maze?.cutMaze()
+        if let box = maze?.cutStep() {
+            drawBox(box, color: .blue)
+        }
+        else if cutPathNodes.count > 0 {
+            let removedBox = cutPathNodes.removeLast()
+            removedBox.removeFromParent()
+        }
+        else {
+            timer?.invalidate()
+        }
     }
-        
+    
     func touchDown(atPoint pos : CGPoint) {
         touchPos=pos
     }

@@ -10,11 +10,14 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    let boxSize = 3
-    let boxMapSize = 30
+    private let boxSize = 3
+    private let boxMapSize = 30
     
     private var maze: MazeTileMapNode?
     private var touchPos: CGPoint?
+
+    private var timer : Timer?
+    private var cutPathNodes = Array<SKSpriteNode>()
     
     override func didMove(to view: SKView) {
         if let label = self.childNode(withName: "//readyLabel") as? SKLabelNode {
@@ -23,44 +26,80 @@ class GameScene: SKScene {
                 
         let maze = MazeTileMapNode(columns: boxMapSize, rows: boxMapSize, boxSize: boxSize)
         
-        maze.position.x = 0
-        maze.position.y = 0
+        self.camera?.setScale(21.0)
         self.addChild(maze)
         self.maze = maze
             
         self.maze = maze
         touchPos = maze.position
         
-        maze.cutMaze()
-    }
-
-    func touchDown(atPoint pos : CGPoint) {
-        touchPos=pos
+        resetCut()
     }
     
-    func touchMoved(toPoint pos : CGPoint) {
-        if (touchPos != nil) {
-            let moveBy = CGVector(dx: pos.x - touchPos!.x, dy: pos.y - touchPos!.y)
-            //let moveDir = CGFloat(atan2f(Float(moveBy.dx),Float(-moveBy.dy)))
-            maze?.position.x += moveBy.dx
-            maze?.position.y += moveBy.dy
-            touchPos = pos
+    func drawBox(_ box: MazeTileMapNode.TileBox, color: NSColor) {
+        if let maze = self.maze {
+            let node = SKSpriteNode(color: color, size: maze.tileBoxSize())
+            node.position = maze.tileBoxCenter(box)
+            node.zPosition = -10
+            
+            self.addChild(node)
+            cutPathNodes.append(node)
+        }
+    }
+    
+    func resetCut() {
+        if let maze = self.maze, cutPathNodes.count == 0 {
+            maze.reset()
+            
+            let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapSize), y: maze.random(boxMapSize))
+            maze.cutStart(at: cutStart)
+            drawBox(cutStart, color: .green)
+            
+            timer?.invalidate()
+            timer = Timer.scheduledTimer(timeInterval: 1.0/60.0, target: self, selector: #selector(GameScene.cutMaze), userInfo: nil, repeats: true)
+        }
+    }
+    
+    func cutMaze() {
+        if let box = maze?.cutStep() {
+            drawBox(box, color: .green)
+        }
+        else if cutPathNodes.count > 0 {
+            let removedBox = cutPathNodes.removeLast()
+            removedBox.removeFromParent()
+        }
+        else {
+            timer?.invalidate()
+        }
+    }
+    
+    func touchDown(atPoint: CGPoint) {
+        touchPos=convertPoint(fromView: atPoint)
+    }
+    
+    func touchMoved(toPoint: CGPoint) {
+        if let camera = self.camera, let touchPos = self.touchPos {
+            let to = convertPoint(fromView: toPoint)
+            let translation = CGPoint(x: touchPos.x - to.x, y: touchPos.y - to.y)
+            
+            camera.position.x += translation.x
+            camera.position.y += translation.y
         }
     }
     
     func touchUp(atPoint pos : CGPoint) {
     }
     
-    func zoom(by: CGPoint) {
-        let decrement = by.y / 12
-        let mazeScale = maze!.xScale
-        if (mazeScale-decrement) > 0.05 {
-          maze?.xScale -= decrement
-          maze?.yScale -= decrement
-        }
-        else {
-            maze?.xScale = 0.05
-            maze?.yScale = 0.05
+    func zoom(delta: CGFloat) {
+        if let camera = self.camera {
+            camera.setScale(camera.xScale + delta / 10)
+            if camera.xScale < 0.05 {
+                camera.setScale(0.05)
+            }
+            
+            if camera.xScale > 21 {
+                camera.setScale(21)
+            }
         }
     }
     
@@ -78,6 +117,10 @@ class GameScene: SKScene {
     
     override func keyDown(with event: NSEvent) {
         switch event.keyCode {
+        case 15: // r
+            resetCut()
+        case 49: // space
+            cutMaze()
         default:
             print("keyDown: \(event.characters!) keyCode: \(event.keyCode)")
         }

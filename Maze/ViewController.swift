@@ -34,7 +34,7 @@ class ViewController: NSViewController {
     }
     
     override func scrollWheel(with event: NSEvent) {
-        scene?.zoom(by: CGPoint(x:event.deltaY, y:event.deltaY))
+        scene?.zoom(delta: event.deltaY)
     }
     
 }
