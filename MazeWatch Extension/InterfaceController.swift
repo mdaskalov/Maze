@@ -15,7 +15,7 @@ class InterfaceController: WKInterfaceController, WKCrownDelegate {
     @IBOutlet var skInterface: WKInterfaceSKScene!
     
     var moving = false
-    var value = 17.0
+    var value = 7.0
     var rps = 0.0
     
     var scene: GameScene?

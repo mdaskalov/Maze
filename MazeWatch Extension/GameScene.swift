@@ -53,8 +53,6 @@ class GameScene: SKScene {
     
     func resetCut() {
         if let maze = self.maze, cutPathNodes.count == 0 {
-            maze.reset()
-            
             let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapSize), y: maze.random(boxMapSize))
             maze.cutStart(at: cutStart)
             drawBox(cutStart, color: .blue)
@@ -95,8 +93,9 @@ class GameScene: SKScene {
     }
     
     func zoom(by: CGFloat) {
-        camera?.xScale = -by * 2
-        camera?.yScale = -by * 2
+        camera?.xScale = -by * 5
+        camera?.yScale = -by * 5
+        //print("scale: \(camera!.xScale)")
     }
     
     override func update(_ currentTime: TimeInterval) {
