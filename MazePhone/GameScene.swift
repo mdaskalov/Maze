@@ -10,7 +10,8 @@ import SpriteKit
 
 class GameScene: SKScene {
     private let boxSize = 3
-    private let boxMapSize = 30
+    private let boxMapWidth = 30
+    private let boxMapHeight = 54
     
     private var maze: MazeTileMapNode?
     private var cameraScale: CGFloat = 1.0
@@ -22,8 +23,8 @@ class GameScene: SKScene {
         if let label = self.childNode(withName: "//readyLabel") as? SKLabelNode {
             label.run(SKAction.fadeOut(withDuration: 2.0))
         }
-        
-        let maze = MazeTileMapNode(columns: boxMapSize, rows: boxMapSize, boxSize: boxSize)
+
+        let maze = MazeTileMapNode(columns: boxMapWidth, rows: boxMapHeight, boxSize: boxSize)
         
         maze.position.x = 0
         maze.position.y = 0
@@ -48,9 +49,7 @@ class GameScene: SKScene {
     
     func resetCut() {
         if let maze = self.maze, cutPathNodes.count == 0 {
-            maze.reset()
-            
-            let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapSize), y: maze.random(boxMapSize))
+            let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapWidth), y: maze.random(boxMapHeight))
             maze.cutStart(at: cutStart)
             drawBox(cutStart, color: .green)
             
