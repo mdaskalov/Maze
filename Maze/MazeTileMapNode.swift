@@ -54,8 +54,8 @@ class MazeTileMapNode: SKTileMapNode {
         self.rows = rows
         self.boxSize = boxSize
         self.group = groupName
-        self.directions = Array(repeating: Array<Direction?>(repeating: nil, count: columns), count: rows)
-        self.processed = Array(repeating: Array<Bool>(repeating: false, count: columns), count: rows)
+        self.directions = Array(repeating: Array<Direction?>(repeating: nil, count: rows), count: columns)
+        self.processed = Array(repeating: Array<Bool>(repeating: false, count: rows), count: columns)
         
         super.init()
         
@@ -73,8 +73,8 @@ class MazeTileMapNode: SKTileMapNode {
         self.rows = 0
         self.boxSize = 3
         self.group = ""
-        self.directions = Array(repeating: Array<Direction?>(repeating: nil, count: columns), count: rows)
-        self.processed = Array(repeating: Array<Bool>(repeating: false, count: columns), count: rows)
+        self.directions = Array(repeating: Array<Direction?>(repeating: nil, count: rows), count: columns)
+        self.processed = Array(repeating: Array<Bool>(repeating: false, count: rows), count: columns)
         super.init(coder: aDecoder)
     }
     
@@ -283,7 +283,6 @@ class MazeTileMapNode: SKTileMapNode {
         case .Up:    return .Down
         case .Down:  return .Up
         }
-        
     }
     
     func boxAt(_ direction: Direction, from: TileBox) -> TileBox? {
@@ -322,7 +321,6 @@ class MazeTileMapNode: SKTileMapNode {
             repeat {
                 dir = Direction(rawValue: random(4))!
                 neighbour = emptyBoxAt(dir, from: box)
-               
             } while neighbour == nil
             return (box: neighbour!, at: dir)
         }
@@ -331,16 +329,14 @@ class MazeTileMapNode: SKTileMapNode {
         }
     }
     
-    func reset() {
+    func cutStart(at: TileBox) {
+        cutPath.removeAll()
         for x in 0..<columns {
             for y in 0..<rows {
                 drawTileBox(TileBox(x: x, y: y))
                 processed[x][y] = false
             }
         }
-    }
-    
-    func cutStart(at: TileBox) {
         cutBox = at
     }
     
@@ -361,11 +357,14 @@ class MazeTileMapNode: SKTileMapNode {
         return nil
     }
     
+    func cutReady() -> Bool {
+        return cutPath.count == 0
+    }
+    
     func cutMaze() {
-        reset()
         cutStart(at: TileBox(x: 0, y: 0))
         repeat {
             let _ = cutStep()
-        } while cutPath.count > 0
+        } while !cutReady()
     }
 }
