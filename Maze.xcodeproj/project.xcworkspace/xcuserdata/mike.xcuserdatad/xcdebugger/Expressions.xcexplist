@@ -27,5 +27,13 @@
       <ContextState
          contextName = "GameScene.drawBox(MazeTileMapNode.TileBox, color : NSColor) -&gt; ():GameScene.swift">
       </ContextState>
+      <ContextState
+         contextName = "GameScene.didMove(to : SKView) -&gt; ():GameScene.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.size">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
    </ContextStates>
 </VariablesViewState>
