@@ -11,7 +11,8 @@ import GameplayKit
 
 class GameScene: SKScene {
     private let boxSize = 3
-    private let boxMapSize = 30
+    private let boxMapWidth = 41
+    private let boxMapHeight = 31
     
     private var maze: MazeTileMapNode?
     private var touchPos: CGPoint?
@@ -24,7 +25,7 @@ class GameScene: SKScene {
             label.run(SKAction.fadeOut(withDuration: 2.0))
         }
                 
-        let maze = MazeTileMapNode(columns: boxMapSize, rows: boxMapSize, boxSize: boxSize)
+        let maze = MazeTileMapNode(columns: boxMapWidth, rows: boxMapHeight, boxSize: boxSize)
         
         self.camera?.setScale(21.0)
         self.addChild(maze)
@@ -49,9 +50,7 @@ class GameScene: SKScene {
     
     func resetCut() {
         if let maze = self.maze, cutPathNodes.count == 0 {
-            maze.reset()
-            
-            let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapSize), y: maze.random(boxMapSize))
+            let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapWidth), y: maze.random(boxMapHeight))
             maze.cutStart(at: cutStart)
             drawBox(cutStart, color: .green)
             
