@@ -21,17 +21,12 @@ class GameScene: SKScene {
     private var cutPathNodes = Array<SKSpriteNode>()
     
     override func didMove(to view: SKView) {
-        if let label = self.childNode(withName: "//readyLabel") as? SKLabelNode {
-            label.run(SKAction.fadeOut(withDuration: 2.0))
-        }
-                
         let maze = MazeTileMapNode(columns: boxMapWidth, rows: boxMapHeight, boxSize: boxSize)
         
         self.camera?.setScale(21.0)
         self.addChild(maze)
         self.maze = maze
-            
-        self.maze = maze
+        
         touchPos = maze.position
         
         resetCut()
@@ -50,6 +45,7 @@ class GameScene: SKScene {
     
     func resetCut() {
         if let maze = self.maze, cutPathNodes.count == 0 {
+            cutPathNodes.removeAll()
             let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapWidth), y: maze.random(boxMapHeight))
             maze.cutStart(at: cutStart)
             drawBox(cutStart, color: .green)
@@ -73,16 +69,19 @@ class GameScene: SKScene {
     }
     
     func touchDown(atPoint: CGPoint) {
-        touchPos=convertPoint(fromView: atPoint)
+        touchPos=atPoint
+        //print(String(format: "  began Pan loc: %4.2f,%4.2f", self.touchPos!.x,self.touchPos!.y))
     }
     
     func touchMoved(toPoint: CGPoint) {
         if let camera = self.camera, let touchPos = self.touchPos {
-            let to = convertPoint(fromView: toPoint)
-            let translation = CGPoint(x: touchPos.x - to.x, y: touchPos.y - to.y)
+            let translation = CGPoint(x: touchPos.x - toPoint.x, y: touchPos.y - toPoint.y)
             
-            camera.position.x += translation.x
-            camera.position.y += translation.y
+            camera.position.x += (translation.x * (camera.xScale))
+            camera.position.y += (translation.y * (camera.yScale))
+            
+            self.touchPos = toPoint
+            //print(String(format: "changed Pan loc: %4.2f,%4.2f", self.touchPos!.x,self.touchPos!.y))
         }
     }
     
@@ -91,27 +90,29 @@ class GameScene: SKScene {
     
     func zoom(delta: CGFloat) {
         if let camera = self.camera {
-            camera.setScale(camera.xScale + delta / 10)
-            if camera.xScale < 0.05 {
-                camera.setScale(0.05)
+            var scale = camera.xScale + delta / 10
+            if scale < 0.8 {
+                scale = 0.8
             }
-            
-            if camera.xScale > 21 {
-                camera.setScale(21)
+            if scale > 25 {
+                scale = 25
             }
+            camera.setScale(scale)
+            //print(String(format: "zoom: %.2f", camera.xScale))
         }
     }
     
     override func mouseDown(with event: NSEvent) {
-        self.touchDown(atPoint: event.location(in: self))
+        
+        self.touchDown(atPoint: event.locationInWindow)
     }
     
     override func mouseDragged(with event: NSEvent) {
-        self.touchMoved(toPoint: event.location(in: self))
+        self.touchMoved(toPoint: event.locationInWindow)
     }
     
     override func mouseUp(with event: NSEvent) {
-        self.touchUp(atPoint: event.location(in: self))
+        self.touchUp(atPoint: event.locationInWindow)
     }
     
     override func keyDown(with event: NSEvent) {
