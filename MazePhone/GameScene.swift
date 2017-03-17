@@ -14,14 +14,18 @@ class GameScene: SKScene {
     private let boxMapHeight = 54
     
     private var maze: MazeTileMapNode?
-    private var cameraScale: CGFloat = 1.0
+    private var cameraScale: CGFloat = 21.0
     
     private var timer : Timer?
     private var cutPathNodes = Array<SKSpriteNode>()
 
+    private var mazeSolver: MazeSolver?
+
     override func didMove(to view: SKView) {
         if let label = self.childNode(withName: "//readyLabel") as? SKLabelNode {
-            label.run(SKAction.fadeOut(withDuration: 2.0))
+            label.xScale = cameraScale
+            label.yScale = cameraScale
+            label.run(SKAction.sequence([SKAction.fadeOut(withDuration: 2.0),SKAction.removeFromParent()]))
         }
 
         let maze = MazeTileMapNode(columns: boxMapWidth, rows: boxMapHeight, boxSize: boxSize)
@@ -29,11 +33,15 @@ class GameScene: SKScene {
         maze.position.x = 0
         maze.position.y = 0
         
-        self.camera?.setScale(21.0)
+        self.camera?.setScale(cameraScale)
         self.addChild(maze)
         self.maze = maze
         
-        resetCut()
+        let mazeSolver = MazeSolver(maze: maze, width: boxMapWidth, height: boxMapHeight, scene: self)
+        self.mazeSolver = mazeSolver
+
+        //resetCut()
+        maze.cutMaze()
     }
     
     func drawBox(_ box: MazeTileMapNode.TileBox, color: UIColor) {
@@ -71,6 +79,24 @@ class GameScene: SKScene {
         }
     }
     
+    func tap() {
+        print("tap")
+        mazeSolver?.abortSolving()
+        mazeSolver?.solveMaze()
+    }
+    
+    func doubleTap() {
+        print("doubleTap")
+        mazeSolver?.abortSolving()
+        mazeSolver?.solveMaze(animateCamera: true)
+    }
+    
+    func longPress() {
+        mazeSolver?.abortSolving()
+        resetCut()
+        //maze?.cutMaze()
+    }
+    
     func panBegan(location: CGPoint, translation: CGPoint, velocity: CGPoint) {
         //print(String(format: "  began Pan loc: %4.2f,%4.2f tra: %4.2f,%4.2f vel: %4.2f,%4.2f", location.x,location.y,translation.x,translation.y,velocity.x,velocity.y))
         //camera?.removeAllActions()
@@ -84,8 +110,8 @@ class GameScene: SKScene {
     }
     
     func panEnded(location: CGPoint, translation: CGPoint, velocity: CGPoint) {
-        camera!.position.x += (translation.x * (camera!.xScale / 6))
-        camera!.position.y += (translation.y * (camera!.yScale / 6))
+        camera!.position.x += (translation.x * (camera!.xScale / 10))
+        camera!.position.y += (translation.y * (camera!.yScale / 10))
         
         let speedUp = SKAction.speed(to: 1.0, duration: 0)
         let moveByVelocity = SKAction.moveBy(x: (velocity.x * (camera!.xScale / 6)), y: (velocity.y * (camera!.yScale / 6)), duration: 0.2)

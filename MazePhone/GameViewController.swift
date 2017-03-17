@@ -97,8 +97,17 @@ class GameViewController: UIViewController {
         }
     }
     */
+    
+    @IBAction func tapGestureRecognized(_ sender: UITapGestureRecognizer) {
+        scene?.tap()
+    }
+    
+    @IBAction func doubleTapGestureRecognized(_ sender: UITapGestureRecognizer) {
+        scene?.doubleTap()
+    }
+    
     @IBAction func longPressGestureRecognized(_ sender: UILongPressGestureRecognizer) {
-        scene?.resetCut()
+        scene?.longPress()
     }
     
     @IBAction func panGestureRecognized(_ sender: UIPanGestureRecognizer) {
