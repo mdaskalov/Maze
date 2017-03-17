@@ -7,6 +7,9 @@
 //
 
 import SpriteKit
+#if os(iOS) || os(macOS)
+import GameplayKit
+#endif
 
 class MazeTileMapNode: SKTileMapNode {
     
@@ -14,12 +17,15 @@ class MazeTileMapNode: SKTileMapNode {
     private var rows: Int
     private var boxSize: Int
     private var group: String
-    private var directions: [[Direction?]]
     private var processed: [[Bool]]
     
     private var cutPath = Array<MazeTileMapNode.TileBox>()
     private var cutBox = TileBox(x: 0, y: 0)
-
+    
+    #if os(iOS) || os(macOS)
+    var mazeGraph: GKGridGraph<GKGridGraphNode>
+    #endif
+    
     struct TileBox {
         var x: Int
         var y: Int
@@ -54,8 +60,14 @@ class MazeTileMapNode: SKTileMapNode {
         self.rows = rows
         self.boxSize = boxSize
         self.group = groupName
-        self.directions = Array(repeating: Array<Direction?>(repeating: nil, count: rows), count: columns)
         self.processed = Array(repeating: Array<Bool>(repeating: false, count: rows), count: columns)
+        
+        #if os(iOS) || os(macOS)
+        self.mazeGraph = GKGridGraph<GKGridGraphNode>(fromGridStartingAt: vector_int2(0,0), width: Int32(columns), height: Int32(rows), diagonalsAllowed: false)
+        for node in self.mazeGraph.nodes! {
+            node.removeConnections(to: node.connectedNodes, bidirectional: true)
+        }
+        #endif
         
         super.init()
         
@@ -73,8 +85,15 @@ class MazeTileMapNode: SKTileMapNode {
         self.rows = 0
         self.boxSize = 3
         self.group = ""
-        self.directions = Array(repeating: Array<Direction?>(repeating: nil, count: rows), count: columns)
         self.processed = Array(repeating: Array<Bool>(repeating: false, count: rows), count: columns)
+        
+        #if os(iOS) || os(macOS)
+        self.mazeGraph = GKGridGraph<GKGridGraphNode>(fromGridStartingAt: vector_int2(0,0), width: Int32(columns), height: Int32(rows), diagonalsAllowed: false)
+        for node in self.mazeGraph.nodes! {
+            node.removeConnections(to: node.connectedNodes, bidirectional: true)
+        }
+        #endif
+        
         super.init(coder: aDecoder)
     }
     
@@ -205,10 +224,13 @@ class MazeTileMapNode: SKTileMapNode {
             return
         }
         
-        directions[box.x][box.y] = side
-        if let oppositeBox = boxAt(side, from: box) {
-            directions[oppositeBox.x][oppositeBox.y] = oppositeDirection(side)
+        #if os(iOS) || os(macOS)
+        if let oppositeBox = boxAt(side, from: box),
+            let node = mazeGraph.node(atGridPosition: (vector_int2)(Int32(box.x),Int32(box.y))),
+            let oppositeNode = mazeGraph.node(atGridPosition: (vector_int2)(Int32(oppositeBox.x),Int32(oppositeBox.y))) {
+            node.addConnections(to: [oppositeNode], bidirectional: true)
         }
+        #endif
         
         switch side {
         case .Up, .Down:
@@ -276,15 +298,6 @@ class MazeTileMapNode: SKTileMapNode {
         return box.x >= 0 && box.x < columns && box.y >= 0 && box.y < rows
     }
     
-    func oppositeDirection(_ direction: Direction) -> Direction {
-        switch direction {
-        case .Left:  return .Right
-        case .Right: return .Left
-        case .Up:    return .Down
-        case .Down:  return .Up
-        }
-    }
-    
     func boxAt(_ direction: Direction, from: TileBox) -> TileBox? {
         var box = from
         
@@ -331,6 +344,11 @@ class MazeTileMapNode: SKTileMapNode {
     
     func cutStart(at: TileBox) {
         cutPath.removeAll()
+        #if os(iOS) || os(macOS)
+        for node in self.mazeGraph.nodes! {
+            node.removeConnections(to: node.connectedNodes, bidirectional: true)
+        }
+        #endif
         for x in 0..<columns {
             for y in 0..<rows {
                 drawTileBox(TileBox(x: x, y: y))
