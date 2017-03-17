@@ -11,25 +11,33 @@ import GameplayKit
 
 class GameScene: SKScene {
     private let boxSize = 3
-    private let boxMapWidth = 41
-    private let boxMapHeight = 31
+    private let boxMapWidth = 41 //41
+    private let boxMapHeight = 31 //31
+    private let initialZoom: CGFloat = 21.0 // 21.0
     
     private var maze: MazeTileMapNode?
     private var touchPos: CGPoint?
 
     private var timer : Timer?
-    private var cutPathNodes = Array<SKSpriteNode>()
+    private var cutPathNodes: [SKSpriteNode] = []
+    
+    private var mazeSolver: MazeSolver?
     
     override func didMove(to view: SKView) {
         let maze = MazeTileMapNode(columns: boxMapWidth, rows: boxMapHeight, boxSize: boxSize)
         
-        self.camera?.setScale(21.0)
+        self.camera?.setScale(initialZoom)
         self.addChild(maze)
         self.maze = maze
         
+        let mazeSolver = MazeSolver(maze: maze, width: boxMapWidth, height: boxMapHeight, scene: self)
+        self.mazeSolver = mazeSolver
+        
+        
         touchPos = maze.position
         
-        resetCut()
+        //resetCut()
+        maze.cutMaze()
     }
     
     func drawBox(_ box: MazeTileMapNode.TileBox, color: NSColor) {
@@ -45,6 +53,7 @@ class GameScene: SKScene {
     
     func resetCut() {
         if let maze = self.maze, cutPathNodes.count == 0 {
+            mazeSolver?.abortSolving()
             cutPathNodes.removeAll()
             let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapWidth), y: maze.random(boxMapHeight))
             maze.cutStart(at: cutStart)
@@ -116,10 +125,15 @@ class GameScene: SKScene {
     }
     
     override func keyDown(with event: NSEvent) {
-        switch event.keyCode {
-        case 15: // r
+        switch event.characters! {
+        case "s":
+            mazeSolver?.solveMaze()
+        case "c":
+            mazeSolver?.solveMaze(animateCamera: true)
+        case "r": // reset
             resetCut()
-        case 49: // space
+        case " ": // cut
+            timer?.invalidate()
             cutMaze()
         default:
             print("keyDown: \(event.characters!) keyCode: \(event.keyCode)")
