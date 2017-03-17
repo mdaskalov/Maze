@@ -122,6 +122,7 @@ class MazeSolver {
     }
     
     func solveMaze(animateCamera: Bool=false) {
+        abortSolving()
         let startNode = maze.mazeGraph.node(atGridPosition: (vector_int2)(Int32(maze.random(boxMapWidth)),Int32(maze.random(boxMapHeight))))
         let endNode = maze.mazeGraph.node(atGridPosition: (vector_int2)(Int32(maze.random(boxMapWidth)),Int32(maze.random(boxMapHeight))))
         
