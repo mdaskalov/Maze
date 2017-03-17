@@ -13,6 +13,7 @@ class GameScene: SKScene {
     
     let boxSize = 3
     let boxMapSize = 20
+    let cameraScale: CGFloat = -35.0
     
     private var maze: MazeTileMapNode?
     private var touchPos: CGPoint?
@@ -22,7 +23,9 @@ class GameScene: SKScene {
     
     override func sceneDidLoad() {
         if let label = self.childNode(withName: "//readyLabel") as? SKLabelNode {
-            label.run(SKAction.fadeOut(withDuration: 2.0))
+            label.xScale = cameraScale
+            label.yScale = cameraScale
+            label.run(SKAction.sequence([SKAction.fadeOut(withDuration: 2.0),SKAction.removeFromParent()]))
         }
         
         let maze = MazeTileMapNode(columns: boxMapSize, rows: boxMapSize, boxSize: boxSize, groupName: "Grass")
@@ -30,7 +33,7 @@ class GameScene: SKScene {
         maze.position.x = 0
         maze.position.y = 0
         
-        self.camera?.setScale(-35.0)
+        self.camera?.setScale(cameraScale)
         self.addChild(maze)
         self.maze = maze
         
