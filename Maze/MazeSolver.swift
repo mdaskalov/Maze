@@ -7,108 +7,129 @@
 //
 
 import SpriteKit
-import GameplayKit
 
 class MazeSolver {
     
-    private let boxMapWidth: Int
-    private let boxMapHeight: Int
+    private let walkerFrames = 28;
+
     private let maze: MazeTileMapNode
     private let scene: SKScene
     
+    private var start: MazeTileMapNode.TileBox
+    
+    private var startNode: SKSpriteNode
+    private var endNode: SKSpriteNode
+    
     private var animationNodes: [SKSpriteNode] = []
 
-    init(maze: MazeTileMapNode, width: Int, height: Int, scene: SKScene) {
-        self.maze = maze
-        self.boxMapWidth = width
-        self.boxMapHeight = height
-        self.scene = scene
+    private var pointType: PointType = .start
+
+    enum PointType {
+        case start
+        case end
     }
     
-    func animateSolution(_ solution: [GKGridGraphNode], animateCamera: Bool) {
+    init(maze: MazeTileMapNode, scene: SKScene) {
+        self.maze = maze
+        self.scene = scene
+        self.start = MazeTileMapNode.TileBox(x: 0, y: 0)
+        self.startNode = SKSpriteNode()
+        self.endNode = SKSpriteNode()
+    }
+    
+    func animationTextures(baseName: String, count: Int) -> [SKTexture] {
+        var result = [SKTexture]()
+        for i in 1...count {
+            let texture = SKTexture(imageNamed: String(format: "\(baseName)%04d",i))
+            result.append(texture)
+        }
+        return result
+    }
+    
+    private func setPoint(at: MazeTileMapNode.TileBox, type: PointType) -> SKSpriteNode {
+        let node = SKSpriteNode(color: type == .start ? .red : .green, size: maze.tileBoxSize().applying(CGAffineTransform(scaleX: 0.6, y: 0.6)))
+        node.name = "Solution.point"
+        node.zPosition = -9
+        node.position = maze.tileBoxCenter(at)
+        self.scene.addChild(node)
+        return node
+    }
+    
+    private func animateSolution(_ solution: [MazeTileMapNode.TileBox], animateCamera: Bool) {
         
         if solution.count > 1 {
-            
             let moveInterval = (animateCamera ? 0.5 : 0.1)
+            let rotateInterval = moveInterval / 4
             let blinkCount = 1
             let blinkInterval = 0.2
             let fadeInInterval = 0.15
             let fadeOutInterval = 0.15
             let actionDelay: TimeInterval = (moveInterval) * Double(solution.count)
             
-            let startPosition = maze.tileBoxCenter(MazeTileMapNode.TileBox(x: Int(solution[0].gridPosition.x), y: Int(solution[0].gridPosition.y)))
-            let endPosition = maze.tileBoxCenter(MazeTileMapNode.TileBox(x: Int(solution[solution.count-1].gridPosition.x), y: Int(solution[solution.count-1].gridPosition.y)))
-            
-            let size = maze.tileBoxSize()
-            
-            let moveNode = SKSpriteNode(imageNamed: "Spaceship") //SKSpriteNode(color: .yellow, size: size.applying(CGAffineTransform(scaleX: 0.5, y: 0.5)))
-            moveNode.name = "Solution.move"
-            moveNode.zPosition = 5
-            self.scene.addChild(moveNode)
+            let textures = animationTextures(baseName: "warrior_walk_", count: walkerFrames)
+            let moveNode = SKSpriteNode(texture: textures[0])
+
+            let walkerAnimation = SKAction.repeatForever(
+                SKAction.animate(with: textures, timePerFrame: 1.0/Double(walkerFrames))
+                )
             
             let pathAnimation = SKAction.sequence([
                 SKAction.wait(forDuration: actionDelay - fadeOutInterval),
                 SKAction.fadeOut(withDuration: fadeOutInterval),
                 SKAction.removeFromParent()
-            ])
+                ])
             
-            let start = SKSpriteNode(color: .red, size: size.applying(CGAffineTransform(scaleX: 0.6, y: 0.6)))
-            start.name = "Solution.start"
-            start.position = startPosition
-            start.zPosition = -9
-            start.run(pathAnimation)
-            self.scene.addChild(start)
-            
-            let end = SKSpriteNode(color: .green, size: size.applying(CGAffineTransform(scaleX: 0.6, y: 0.6)))
-            end.name = "Solution.end"
-            end.position = endPosition
-            end.zPosition = -9
-            end.run(pathAnimation)
-            self.scene.addChild(end)
+            let blinkAnimation = SKAction.sequence([
+                SKAction.repeat(SKAction.sequence([
+                    SKAction.fadeIn(withDuration: blinkInterval),
+                    SKAction.fadeOut(withDuration: blinkInterval)
+                    ]), count: blinkCount),
+                SKAction.fadeAlpha(to: 0.2, duration: fadeInInterval)
+                ])
+
+            moveNode.name = "Solution.move"
+            moveNode.zPosition = 5
+            moveNode.xScale = 5
+            moveNode.yScale = 5
+            self.scene.addChild(moveNode)
             
             var moveAnimation = [SKAction]()
-            var cameraAnimation = [SKAction]()
+            var rotationAnimation = [SKAction]()
             
             for i in 0..<solution.count {
-                let box = MazeTileMapNode.TileBox(x: Int(solution[i].gridPosition.x), y: Int(solution[i].gridPosition.y))
+                let box = solution[i]
                 let center = maze.tileBoxCenter(box)
                 
-                let node = SKSpriteNode(color: .white, size: size)
-                node.name = "Solution.box"
-                node.alpha = 0
-                node.position = center
-                node.zPosition = -10
+                let pathNode = SKSpriteNode(color: .white, size: maze.tileBoxSize())
+                pathNode.name = "Solution.path"
+                pathNode.alpha = 0
+                pathNode.position = center
+                pathNode.zPosition = -10
                 
                 if i > 0 {
-                    let startBox = MazeTileMapNode.TileBox(x: Int(solution[i-1].gridPosition.x), y: Int(solution[i-1].gridPosition.y))
-                    let startCenter = maze.tileBoxCenter(startBox)
-                    
-                    let bearing = CGFloat(atan2f(Float(startCenter.x - center.x), Float(center.y-startCenter.y)))
+                    let startBox = solution[i-1]
+                    let bearing = CGFloat(atan2(Double(startBox.x - box.x), Double(box.y-startBox.y)))
                     let move = SKAction.move(to: center, duration: moveInterval)
-                    let rotate = SKAction.rotate(toAngle: bearing, duration: moveInterval/8, shortestUnitArc:true)
-                    moveAnimation.append(SKAction.group([rotate,move]))
-                    cameraAnimation.append(move)
+                    let rotate = SKAction.rotate(toAngle: bearing, duration: rotateInterval, shortestUnitArc:true)
+                    moveAnimation.append(move)
+                    rotationAnimation.append(rotate)
+                    rotationAnimation.append(SKAction.wait(forDuration: moveInterval - rotateInterval))
                 }
                 else {
                     moveAnimation.append(SKAction.move(to: center, duration: 0))
-                    cameraAnimation.append(SKAction.move(to: center, duration: 0))
                 }
                 
-                let blinkAnimation = SKAction.sequence([
-                    SKAction.repeat(SKAction.sequence([
-                        SKAction.fadeIn(withDuration: blinkInterval),
-                        SKAction.fadeOut(withDuration: blinkInterval)
-                    ]), count: blinkCount),
-                    SKAction.fadeAlpha(to: 0.2, duration: fadeInInterval)
-                ])
-                node.run(SKAction.group([blinkAnimation, pathAnimation]))
-                self.scene.addChild(node)
-            }
-            if animateCamera {
-                self.scene.camera?.run(SKAction.sequence(cameraAnimation))
+                pathNode.run(SKAction.group([blinkAnimation, pathAnimation]))
+                self.scene.addChild(pathNode)
             }
             moveAnimation.append(SKAction.removeFromParent())
-            moveNode.run(SKAction.sequence(moveAnimation))
+            
+            startNode.run(pathAnimation)
+            endNode.run(pathAnimation)
+            moveNode.run(SKAction.group([walkerAnimation,SKAction.sequence(rotationAnimation),SKAction.sequence(moveAnimation)]))
+            if animateCamera {
+                self.scene.camera?.run(SKAction.sequence(moveAnimation))
+            }
         }
     }
     
@@ -121,17 +142,25 @@ class MazeSolver {
         scene.camera?.removeAllActions()
     }
     
-    func solveMaze(animateCamera: Bool=false) {
-        abortSolving()
-        let startNode = maze.mazeGraph.node(atGridPosition: (vector_int2)(Int32(maze.random(boxMapWidth)),Int32(maze.random(boxMapHeight))))
-        let endNode = maze.mazeGraph.node(atGridPosition: (vector_int2)(Int32(maze.random(boxMapWidth)),Int32(maze.random(boxMapHeight))))
-        
-        if startNode != nil && endNode != nil {
-            let solution = maze.mazeGraph.findPath(from: startNode!, to: endNode!) as! [GKGridGraphNode]
-            if !solution.isEmpty {
-                animateSolution(solution, animateCamera: animateCamera)
-            }
+    func setPoint(at: MazeTileMapNode.TileBox) {
+        switch pointType {
+        case .start:
+            abortSolving()
+            self.start = at
+            self.startNode = setPoint(at: at, type: .start)
+            pointType = .end
+        case .end:
+            self.endNode = setPoint(at: at, type: .end)
+            animateSolution(maze.findSolution(from: self.start, to: at), animateCamera: false)
+            pointType = .start
         }
+    }
+    
+    func solveMaze(start: MazeTileMapNode.TileBox, end: MazeTileMapNode.TileBox, animateCamera: Bool=false) {
+        abortSolving()
+        self.startNode = setPoint(at: start, type: .start)
+        self.endNode = setPoint(at: end, type: .end)
+        animateSolution(maze.findSolution(from: start, to: end), animateCamera: animateCamera)
     }
 
 }

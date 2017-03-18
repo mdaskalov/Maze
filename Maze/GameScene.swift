@@ -23,6 +23,8 @@ class GameScene: SKScene {
     
     private var mazeSolver: MazeSolver?
     
+    private var startBox: MazeTileMapNode.TileBox = MazeTileMapNode.TileBox(x: 0, y: 0)
+    
     override func didMove(to view: SKView) {
         let maze = MazeTileMapNode(columns: boxMapWidth, rows: boxMapHeight, boxSize: boxSize)
         
@@ -30,14 +32,12 @@ class GameScene: SKScene {
         self.addChild(maze)
         self.maze = maze
         
-        let mazeSolver = MazeSolver(maze: maze, width: boxMapWidth, height: boxMapHeight, scene: self)
-        self.mazeSolver = mazeSolver
-        
-        
-        touchPos = maze.position
+        self.mazeSolver = MazeSolver(maze: maze, scene: self)
         
         //resetCut()
         maze.cutMaze()
+
+        touchPos = maze.position
     }
     
     func drawBox(_ box: MazeTileMapNode.TileBox, color: NSColor) {
@@ -53,7 +53,6 @@ class GameScene: SKScene {
     
     func resetCut() {
         if let maze = self.maze, cutPathNodes.count == 0 {
-            mazeSolver?.abortSolving()
             cutPathNodes.removeAll()
             let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapWidth), y: maze.random(boxMapHeight))
             maze.cutStart(at: cutStart)
@@ -79,6 +78,13 @@ class GameScene: SKScene {
     
     func touchDown(atPoint: CGPoint) {
         touchPos=atPoint
+        
+        if let maze = self.maze, let mazeSolver = self.mazeSolver {
+            if let clickBox = maze.tileBox(fromPosition: self.convertPoint(fromView: atPoint)) {
+                mazeSolver.setPoint(at: clickBox)
+                print(String(format: "click at: %03d,%03d", clickBox.x, clickBox.y))
+            }
+        }
         //print(String(format: "  began Pan loc: %4.2f,%4.2f", self.touchPos!.x,self.touchPos!.y))
     }
     
@@ -112,7 +118,6 @@ class GameScene: SKScene {
     }
     
     override func mouseDown(with event: NSEvent) {
-        
         self.touchDown(atPoint: event.locationInWindow)
     }
     
@@ -127,10 +132,15 @@ class GameScene: SKScene {
     override func keyDown(with event: NSEvent) {
         switch event.characters! {
         case "s":
-            mazeSolver?.solveMaze()
+            if let maze = self.maze, let mazeSolver = self.mazeSolver {
+                mazeSolver.solveMaze(start: maze.randomTileBox(), end: maze.randomTileBox())
+            }
         case "c":
-            mazeSolver?.solveMaze(animateCamera: true)
+            if let maze = self.maze, let mazeSolver = self.mazeSolver {
+                mazeSolver.solveMaze(start: maze.randomTileBox(), end: maze.randomTileBox(), animateCamera: true)
+            }
         case "r": // reset
+            mazeSolver?.abortSolving()
             resetCut()
         case " ": // cut
             timer?.invalidate()

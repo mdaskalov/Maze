@@ -23,7 +23,7 @@ class MazeTileMapNode: SKTileMapNode {
     private var cutBox = TileBox(x: 0, y: 0)
     
     #if os(iOS) || os(macOS)
-    var mazeGraph: GKGridGraph<GKGridGraphNode>
+    private var mazeGraph: GKGridGraph<GKGridGraphNode>
     #endif
     
     struct TileBox {
@@ -157,6 +157,17 @@ class MazeTileMapNode: SKTileMapNode {
     
     func random(_ max: Int) -> Int {
         return Int(arc4random_uniform(UInt32(max)))
+    }
+    
+    func randomTileBox() -> TileBox {
+        return TileBox(x: random(columns), y: random(rows))
+    }
+    
+    func tileBox(fromPosition: CGPoint) -> TileBox? {
+        let tileColumn = tileColumnIndex(fromPosition: fromPosition)
+        let tileRow = tileRowIndex(fromPosition: fromPosition)
+        let box = TileBox(x: tileColumn / (boxSize+1), y: tileRow / (boxSize+1))
+        return isInBounds(box) ? box : nil
     }
     
     func tileBoxCenter(_ box: MazeTileMapNode.TileBox) -> CGPoint  {
@@ -384,5 +395,23 @@ class MazeTileMapNode: SKTileMapNode {
         repeat {
             let _ = cutStep()
         } while !cutReady()
+    }
+    
+    func findSolution(from: TileBox, to: TileBox) -> [TileBox] {
+        var result = [TileBox]()
+        
+        #if os(iOS) || os(macOS)
+        let startNode = mazeGraph.node(atGridPosition: (vector_int2)(Int32(from.x),Int32(from.y)))
+        let endNode = mazeGraph.node(atGridPosition: (vector_int2)(Int32(to.x),Int32(to.y)))
+        
+        if startNode != nil && endNode != nil {
+            let path = mazeGraph.findPath(from: startNode!, to: endNode!) as! [GKGridGraphNode]
+            for node in path {
+                result.append(TileBox(x: Int(node.gridPosition.x), y: Int(node.gridPosition.y)))
+            }
+        }
+        #endif
+        
+        return result
     }
 }

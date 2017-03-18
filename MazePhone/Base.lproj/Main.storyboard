@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12113" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12078"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -27,6 +27,8 @@
                             <outletCollection property="gestureRecognizers" destination="MQE-0x-hIb" appends="YES" id="c1d-Rs-A6Y"/>
                             <outletCollection property="gestureRecognizers" destination="Miu-5F-fZ3" appends="YES" id="0Qi-Qf-h53"/>
                             <outletCollection property="gestureRecognizers" destination="6Wa-BU-Tn7" appends="YES" id="gSn-Zp-jC3"/>
+                            <outletCollection property="gestureRecognizers" destination="Dda-Oj-6oX" appends="YES" id="8L0-mE-Byd"/>
+                            <outletCollection property="gestureRecognizers" destination="hsU-Bx-30r" appends="YES" id="rSm-jw-yv3"/>
                         </connections>
                     </view>
                 </viewController>
@@ -51,6 +53,16 @@
                         <action selector="longPressGestureRecognized:" destination="BV1-FR-VrT" id="sxR-Zq-B31"/>
                     </connections>
                 </pongPressGestureRecognizer>
+                <tapGestureRecognizer id="Dda-Oj-6oX">
+                    <connections>
+                        <action selector="tapGestureRecognized:" destination="BV1-FR-VrT" id="t7C-A0-p8k"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer numberOfTouchesRequired="2" id="hsU-Bx-30r">
+                    <connections>
+                        <action selector="doubleTapGestureRecognized:" destination="BV1-FR-VrT" id="eOg-EO-s7G"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
         </scene>
     </scenes>

@@ -37,8 +37,7 @@ class GameScene: SKScene {
         self.addChild(maze)
         self.maze = maze
         
-        let mazeSolver = MazeSolver(maze: maze, width: boxMapWidth, height: boxMapHeight, scene: self)
-        self.mazeSolver = mazeSolver
+        self.mazeSolver = MazeSolver(maze: maze, scene: self)
 
         //resetCut()
         maze.cutMaze()
@@ -57,6 +56,7 @@ class GameScene: SKScene {
     
     func resetCut() {
         if let maze = self.maze, cutPathNodes.count == 0 {
+            mazeSolver?.abortSolving()
             let cutStart = MazeTileMapNode.TileBox(x: maze.random(boxMapWidth), y: maze.random(boxMapHeight))
             maze.cutStart(at: cutStart)
             drawBox(cutStart, color: .green)
@@ -79,16 +79,20 @@ class GameScene: SKScene {
         }
     }
     
-    func tap() {
-        print("tap")
-        mazeSolver?.abortSolving()
-        mazeSolver?.solveMaze()
+    func tap(at: CGPoint) {
+        //print("tap")
+
+        if let maze = self.maze, let mazeSolver = self.mazeSolver, let clickBox = maze.tileBox(fromPosition: self.convertPoint(fromView: at)) {
+            //print(String(format: "click at: %03d,%03d", clickBox.x, clickBox.y))
+            mazeSolver.setPoint(at: clickBox)
+        }
     }
     
     func doubleTap() {
-        print("doubleTap")
-        mazeSolver?.abortSolving()
-        mazeSolver?.solveMaze(animateCamera: true)
+        //print("doubleTap")
+        if let maze = self.maze, let mazeSolver = self.mazeSolver {
+            mazeSolver.solveMaze(start: maze.randomTileBox(), end: maze.randomTileBox(), animateCamera: true)
+        }
     }
     
     func longPress() {
@@ -99,33 +103,23 @@ class GameScene: SKScene {
     
     func panBegan(location: CGPoint, translation: CGPoint, velocity: CGPoint) {
         //print(String(format: "  began Pan loc: %4.2f,%4.2f tra: %4.2f,%4.2f vel: %4.2f,%4.2f", location.x,location.y,translation.x,translation.y,velocity.x,velocity.y))
-        //camera?.removeAllActions()
     }
     
     func panChanged(location: CGPoint, translation: CGPoint, velocity: CGPoint) {
-        camera!.position.x += (translation.x * (camera!.xScale / 6))
-        camera!.position.y += (translation.y * (camera!.yScale / 6))
+        camera!.position.x += (translation.x * (camera!.xScale / 10))
+        camera!.position.y += (translation.y * (camera!.yScale / 10))
         
         //print(String(format: "changed Pan loc: %4.2f,%4.2f tra: %4.2f,%4.2f vel: %4.2f,%4.2f", location.x,location.y,translation.x,translation.y,velocity.x,velocity.y))
     }
     
     func panEnded(location: CGPoint, translation: CGPoint, velocity: CGPoint) {
-        camera!.position.x += (translation.x * (camera!.xScale / 10))
-        camera!.position.y += (translation.y * (camera!.yScale / 10))
-        
-        let speedUp = SKAction.speed(to: 1.0, duration: 0)
-        let moveByVelocity = SKAction.moveBy(x: (velocity.x * (camera!.xScale / 6)), y: (velocity.y * (camera!.yScale / 6)), duration: 0.2)
-        let slowDown = SKAction.speed(to: 0, duration: 0.2)
-        let group = SKAction.sequence([speedUp,moveByVelocity,slowDown])
-        
-        camera?.run(group)
- 
+        //camera!.position.x += (translation.x * (camera!.xScale / 10))
+        //camera!.position.y += (translation.y * (camera!.yScale / 10))
         //print(String(format: "  ended Pan loc: %4.2f,%4.2f tra: %4.2f,%4.2f vel: %4.2f,%4.2f", location.x,location.y,translation.x,translation.y,velocity.x,velocity.y))
     }
     
     func pinchBegan(location: CGPoint, scale: CGFloat, velocity: CGFloat) {
         self.cameraScale = scale
-        
         //print(String(format: "  began Pinch: loc: %4.2f,%4.2f sca: %4.2f vel: %4.2f",location.x,location.y,scale,velocity))
     }
     

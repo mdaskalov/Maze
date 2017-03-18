@@ -3,12 +3,15 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "MazeTileMapNode.cutMaze() -&gt; ():MazeTileMapNode.swift">
+         contextName = "GameScene.solveMaze() -&gt; ():GameScene.swift">
          <PersistentStrings>
             <PersistentString
-               value = "cutPath.count">
+               value = "mazeGraph.nodes">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "GameScene.drawBox(MazeTileMapNode.TileBox, color : NSColor) -&gt; ():GameScene.swift">
       </ContextState>
       <ContextState
          contextName = "MazeTileMapNode.emptyBoxAt(MazeTileMapNode.Direction, from : MazeTileMapNode.TileBox) -&gt; MazeTileMapNode.TileBox?:MazeTileMapNode.swift">
@@ -19,13 +22,34 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "GameScene.cutMaze() -&gt; ():GameScene.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "mazeGraph.nodes">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "GameScene.resetCut() -&gt; ():GameScene.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.mazeGraph?.nodes">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MazeTileMapNode.cutMaze() -&gt; ():MazeTileMapNode.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "cutPath.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "MazeTileMapNode.findEmptyNeighbour(MazeTileMapNode.TileBox) -&gt; (box : MazeTileMapNode.TileBox, direction : MazeTileMapNode.Direction)?:MazeTileMapNode.swift">
       </ContextState>
       <ContextState
          contextName = "MazeTileMapNode.findEmptyNeighbour(MazeTileMapNode.TileBox) -&gt; (box : MazeTileMapNode.TileBox, at : MazeTileMapNode.Direction)?:MazeTileMapNode.swift">
-      </ContextState>
-      <ContextState
-         contextName = "GameScene.drawBox(MazeTileMapNode.TileBox, color : NSColor) -&gt; ():GameScene.swift">
       </ContextState>
       <ContextState
          contextName = "GameScene.didMove(to : SKView) -&gt; ():GameScene.swift">

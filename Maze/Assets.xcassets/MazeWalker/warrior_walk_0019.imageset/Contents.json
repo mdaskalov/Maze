@@ -2,8 +2,8 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "Spaceship.png"
+      "filename" : "warrior_walk_0019.png",
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
