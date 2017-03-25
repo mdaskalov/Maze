@@ -22,18 +22,18 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "GameScene.cutMaze() -&gt; ():GameScene.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "mazeGraph.nodes">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "GameScene.resetCut() -&gt; ():GameScene.swift">
          <PersistentStrings>
             <PersistentString
                value = "self.mazeGraph?.nodes">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "GameScene.didMove(to : SKView) -&gt; ():GameScene.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.size">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -49,13 +49,21 @@
          contextName = "MazeTileMapNode.findEmptyNeighbour(MazeTileMapNode.TileBox) -&gt; (box : MazeTileMapNode.TileBox, direction : MazeTileMapNode.Direction)?:MazeTileMapNode.swift">
       </ContextState>
       <ContextState
+         contextName = "MazeTileMapNode.cutTileBox(MazeTileMapNode.TileBox, side : MazeTileMapNode.Direction) -&gt; ():MazeTileMapNode.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "numberOfRows">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "MazeTileMapNode.findEmptyNeighbour(MazeTileMapNode.TileBox) -&gt; (box : MazeTileMapNode.TileBox, at : MazeTileMapNode.Direction)?:MazeTileMapNode.swift">
       </ContextState>
       <ContextState
-         contextName = "GameScene.didMove(to : SKView) -&gt; ():GameScene.swift">
+         contextName = "GameScene.cutMaze() -&gt; ():GameScene.swift">
          <PersistentStrings>
             <PersistentString
-               value = "self.size">
+               value = "mazeGraph.nodes">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
