@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11134" systemVersion="15F34" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11134"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -653,7 +655,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Maze" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="0.0"/>
@@ -679,10 +681,32 @@
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModuleProvider="target"  sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="Maze" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl" customClass="SKView">
-                        <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <gestureRecognizers>
+                            <clickGestureRecognizer delaysPrimaryMouseButtonEvents="YES" numberOfClicksRequired="1" id="NGe-oL-LH3">
+                                <connections>
+                                    <action selector="clickGestureRecognized:" target="XfG-lQ-9wD" id="Seb-vX-fNX"/>
+                                </connections>
+                            </clickGestureRecognizer>
+                            <clickGestureRecognizer delaysPrimaryMouseButtonEvents="YES" numberOfClicksRequired="2" id="yK5-zl-Zqj">
+                                <connections>
+                                    <action selector="doubleClickGestureRecognized:" target="XfG-lQ-9wD" id="cBf-2a-gvq"/>
+                                </connections>
+                            </clickGestureRecognizer>
+                            <pressGestureRecognizer delaysPrimaryMouseButtonEvents="YES" id="as5-0L-iXd">
+                                <connections>
+                                    <action selector="pressGestureRecognized:" target="XfG-lQ-9wD" id="HO2-zn-2UB"/>
+                                </connections>
+                            </pressGestureRecognizer>
+                            <panGestureRecognizer delaysPrimaryMouseButtonEvents="YES" id="AeZ-Zl-BoX">
+                                <connections>
+                                    <action selector="panGestureRecognized:" target="XfG-lQ-9wD" id="YVP-Zk-bkG"/>
+                                </connections>
+                            </panGestureRecognizer>
+                        </gestureRecognizers>
                     </view>
                     <connections>
                         <outlet property="skView" destination="m2S-Jp-Qdl" id="qux-te-cT3"/>
