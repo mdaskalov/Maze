@@ -81,20 +81,7 @@ class MazeTileMapNode: SKTileMapNode {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        self.columns = 0
-        self.rows = 0
-        self.boxSize = 3
-        self.group = ""
-        self.processed = Array(repeating: Array<Bool>(repeating: false, count: rows), count: columns)
-        
-        #if os(iOS) || os(macOS)
-        self.mazeGraph = GKGridGraph<GKGridGraphNode>(fromGridStartingAt: vector_int2(0,0), width: Int32(columns), height: Int32(rows), diagonalsAllowed: false)
-        for node in self.mazeGraph.nodes! {
-            node.removeConnections(to: node.connectedNodes, bidirectional: true)
-        }
-        #endif
-        
-        super.init(coder: aDecoder)
+        fatalError("not implemented")
     }
     
     private func setTile(type: TileType, column: Int, row: Int, group: String = "") {

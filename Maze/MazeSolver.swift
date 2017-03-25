@@ -123,14 +123,13 @@ class MazeSolver {
                 pathNode.run(SKAction.group([blinkAnimation, pathAnimation]))
                 self.scene.addChild(pathNode)
             }
-            moveAnimation.append(SKAction.removeFromParent())
-            
-            startNode.run(SKAction.group([SKAction.repeatForever(SKAction.rotate(byAngle: 1, duration: fadeOutInterval)),pathAnimation]))
-            endNode.run(SKAction.group([SKAction.repeatForever(SKAction.rotate(byAngle: -1, duration: fadeOutInterval)),pathAnimation]))
-            moveNode.run(SKAction.group([walkerAnimation,SKAction.sequence(rotationAnimation),SKAction.sequence(moveAnimation)]))
             if animateCamera {
                 self.scene.camera?.run(SKAction.sequence(moveAnimation))
             }
+            startNode.run(SKAction.group([SKAction.repeatForever(SKAction.rotate(byAngle: 1, duration: fadeOutInterval)),pathAnimation]))
+            endNode.run(SKAction.group([SKAction.repeatForever(SKAction.rotate(byAngle: -1, duration: fadeOutInterval)),pathAnimation]))
+            moveAnimation.append(SKAction.removeFromParent())
+            moveNode.run(SKAction.group([walkerAnimation,SKAction.sequence(rotationAnimation),SKAction.sequence(moveAnimation)]))
         }
     }
     
