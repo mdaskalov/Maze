@@ -37,5 +37,36 @@ class ViewController: NSViewController {
         scene?.zoom(delta: event.deltaY)
     }
     
+    @IBAction func clickGestureRecognized(_ sender: NSClickGestureRecognizer) {
+        scene?.tap(at: sender.location(in: sender.view))
+    }
+    
+    @IBAction func doubleClickGestureRecognized(_ sender: NSClickGestureRecognizer) {
+        scene?.doubleTap()
+    }
+    
+    @IBAction func pressGestureRecognized(_ sender: NSPressGestureRecognizer) {
+        scene?.longPress()
+    }
+    
+    @IBAction func panGestureRecognized(_ sender: NSPanGestureRecognizer) {
+        if let scene = self.scene, let view = sender.view {
+            let location = sender.location(in: view)
+            let translation = sender.translation(in: view)
+            let velocity = sender.velocity(in: view)
+            
+            if sender.state == .began {
+                scene.panBegan(location: location, translation: translation, velocity: velocity)
+                sender.setTranslation(CGPoint(x: 0, y:0), in: view)
+            }
+            else if sender.state == .changed {
+                scene.panChanged(location: location, translation: translation, velocity: velocity)
+            }
+            else if sender.state == .ended {
+                scene.panEnded(location: location, translation: translation, velocity: velocity)
+                sender.setTranslation(CGPoint(x: 0, y:0), in: view)
+            }
+        }
+    }
 }
 

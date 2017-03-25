@@ -11,7 +11,7 @@ import SpriteKit
 
 class GameScene: SKScene {
     
-    let boxSize = 3
+    let boxSize = 2
     let boxMapSize = 20
     let cameraScale: CGFloat = -35.0
     

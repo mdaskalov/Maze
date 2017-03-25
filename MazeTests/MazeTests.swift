@@ -12,7 +12,7 @@ import XCTest
 class MazeTests: XCTestCase {
     let columns = 10
     let rows = 10
-    let boxSize = 3
+    let boxSize = 1
     
     override func setUp() {
         super.setUp()
@@ -44,6 +44,7 @@ class MazeTests: XCTestCase {
         XCTAssert(!maze.isInBounds(MazeTileMapNode.TileBox(x: columns,   y: rows-1)), "isInBounds false for columns  ,rows-1")
         XCTAssert(!maze.isInBounds(MazeTileMapNode.TileBox(x: columns-1, y: rows  )), "isInBounds false for columns-1,rows")
         XCTAssert(!maze.isInBounds(MazeTileMapNode.TileBox(x: columns,   y: rows  )), "isInBounds false for columns  ,rows")
+        
     }
     
     func testHorizontalCut() {

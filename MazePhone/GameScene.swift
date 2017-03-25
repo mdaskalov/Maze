@@ -9,7 +9,7 @@
 import SpriteKit
 
 class GameScene: SKScene {
-    private let boxSize = 3
+    private let boxSize = 2
     private let boxMapWidth = 30
     private let boxMapHeight = 54
     

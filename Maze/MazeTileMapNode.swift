@@ -73,8 +73,8 @@ class MazeTileMapNode: SKTileMapNode {
         
         if let tileSet = SKTileSet(named: tileSetName) {
             self.tileSet = tileSet
-            numberOfColumns = columns*(boxSize+1)
-            numberOfRows = rows*(boxSize+1)
+            numberOfColumns = columns*(boxSize+2)
+            numberOfRows = rows*(boxSize+2)
             tileSize = CGSize(width: 128, height: 128)
             enableAutomapping = false
         }
@@ -166,13 +166,13 @@ class MazeTileMapNode: SKTileMapNode {
     func tileBox(fromPosition: CGPoint) -> TileBox? {
         let tileColumn = tileColumnIndex(fromPosition: fromPosition)
         let tileRow = tileRowIndex(fromPosition: fromPosition)
-        let box = TileBox(x: tileColumn / (boxSize+1), y: tileRow / (boxSize+1))
+        let box = TileBox(x: tileColumn / (boxSize+2), y: tileRow / (boxSize+2))
         return isInBounds(box) ? box : nil
     }
     
     func tileBoxCenter(_ box: MazeTileMapNode.TileBox) -> CGPoint  {
-        let tileColumn = box.x*(self.boxSize+1)
-        let tileRow = box.y*(self.boxSize+1)
+        let tileColumn = box.x*(self.boxSize+2)
+        let tileRow = box.y*(self.boxSize+2)
         
         let boxSize = self.tileBoxSize()
         let center = centerOfTile(atColumn: tileColumn, row: tileRow)
@@ -183,31 +183,31 @@ class MazeTileMapNode: SKTileMapNode {
     }
 
     func tileBoxSize() -> CGSize {
-        return tileSize.applying(CGAffineTransform(scaleX: CGFloat(self.boxSize+1), y: CGFloat(self.boxSize+1)))
+        return tileSize.applying(CGAffineTransform(scaleX: CGFloat(self.boxSize+2), y: CGFloat(self.boxSize+2)))
     }
     
     func drawTileBox(_ box: TileBox, group: String = "") {
-        let tileColumn = box.x*(boxSize+1)
-        let tileRow = box.y*(boxSize+1)
-        setTile(type: .UpperLeftCorner, column: tileColumn, row: tileRow+boxSize, group: group)
-        setTile(type: .UpperRightCorner, column: tileColumn+boxSize, row: tileRow+boxSize, group: group)
-        for c in tileColumn+1...tileColumn+boxSize-1 {
-            setTile(type: .DownEdge, column: c, row: tileRow+boxSize, group: group)
+        let tileColumn = box.x*(boxSize+2)
+        let tileRow = box.y*(boxSize+2)
+        setTile(type: .UpperLeftCorner, column: tileColumn, row: tileRow+boxSize+1, group: group)
+        setTile(type: .UpperRightCorner, column: tileColumn+boxSize+1, row: tileRow+boxSize+1, group: group)
+        for c in tileColumn+1...tileColumn+boxSize {
+            setTile(type: .DownEdge, column: c, row: tileRow+boxSize+1, group: group)
             setTile(type: .UpEdge, column: c, row: tileRow, group: group)
         }
-        for r in tileRow+1...tileRow+boxSize-1 {
+        for r in tileRow+1...tileRow+boxSize {
             setTile(type: .RightEdge, column: tileColumn, row: r, group: group)
-            setTile(type: .LeftEdge, column: tileColumn+boxSize, row: r, group: group)
+            setTile(type: .LeftEdge, column: tileColumn+boxSize+1, row: r, group: group)
         }
         setTile(type: .LowerLeftCorner, column: tileColumn, row: tileRow, group: group)
-        setTile(type: .LowerRightCorner, column: tileColumn+boxSize, row: tileRow, group: group)
+        setTile(type: .LowerRightCorner, column: tileColumn+boxSize+1, row: tileRow, group: group)
     }
     
     func checkTileBox(side: Direction, column: Int, row: Int) -> Bool {
-        var tileColumn = column*(boxSize+1)
-        var tileRow = row*(boxSize+1)
+        var tileColumn = column*(boxSize+2)
+        var tileRow = row*(boxSize+2)
         
-        if tileRow < 0 || tileRow+boxSize >= numberOfRows || tileColumn < 0 || tileColumn+boxSize >= numberOfColumns {
+        if tileRow < 0 || tileRow+boxSize+1 >= numberOfRows || tileColumn < 0 || tileColumn+boxSize+1 >= numberOfColumns {
             return true
         }
         
@@ -215,11 +215,11 @@ class MazeTileMapNode: SKTileMapNode {
         case .Left:
             tileRow += 1
         case .Right:
-            tileColumn += boxSize
+            tileColumn += boxSize+1
             tileRow += 1
         case .Up:
             tileColumn += 1
-            tileRow += boxSize
+            tileRow += boxSize+1
         case .Down:
             tileColumn += 1
         }
@@ -228,8 +228,8 @@ class MazeTileMapNode: SKTileMapNode {
     }
     
     func cutTileBox(_ box: TileBox, side: Direction) {
-        let tileColumn = box.x*(boxSize+1)
-        let tileRow = box.y*(boxSize+1)
+        let tileColumn = box.x*(boxSize+2)
+        let tileRow = box.y*(boxSize+2)
         
         if !isInBounds(box) {
             return
@@ -245,7 +245,7 @@ class MazeTileMapNode: SKTileMapNode {
         
         switch side {
         case .Up, .Down:
-            if tileRow < 0 || tileRow+boxSize >= numberOfRows {
+            if (side == .Down && tileRow < 0) || (side == .Up && tileRow+boxSize+2 >= numberOfRows) {
                 break
             }
             
@@ -254,8 +254,8 @@ class MazeTileMapNode: SKTileMapNode {
             let rightSide = checkTileBox(side: .Right, column: box.x, row: box.y)
             let rightSideOutside = checkTileBox(side: .Right, column: box.x, row: (side == .Up ? box.y+1 : box.y-1))
             
-            let outsideEdgeRow = (side == .Up ? tileRow+boxSize+1 : tileRow-1)
-            let insideEdgeRow = (side == .Up ? tileRow+boxSize : tileRow)
+            let outsideEdgeRow = (side == .Up ? tileRow+boxSize+2 : tileRow-1)
+            let insideEdgeRow = (side == .Up ? tileRow+boxSize+1 : tileRow)
             
             let leftEdgeInsideNoWall: TileType = (side == .Up ? .LowerRightEdge : .UpperRightEdge)
             let leftEdgeOutsideNoWall: TileType = (side == .Up ? .UpperRightEdge : .LowerRightEdge)
@@ -266,15 +266,15 @@ class MazeTileMapNode: SKTileMapNode {
             setTile(type: leftSide ? .RightEdge : leftEdgeInsideNoWall, column: tileColumn, row: insideEdgeRow)
             setTile(type: leftSideOutside ? .RightEdge : leftEdgeOutsideNoWall, column: tileColumn, row: outsideEdgeRow)
             //Center
-            for c in tileColumn+1...tileColumn+boxSize-1 {
+            for c in tileColumn+1...tileColumn+boxSize {
                 setTile(type: .None, column: c, row: insideEdgeRow)
                 setTile(type: .None, column: c, row: outsideEdgeRow)
             }
             //Right
-            setTile(type: rightSide ? .LeftEdge : rightEdgeInsideNoWall, column: tileColumn+boxSize, row: insideEdgeRow)
-            setTile(type: rightSideOutside ? .LeftEdge : rightEdgeOutsideNoWall, column: tileColumn+boxSize, row: outsideEdgeRow)
+            setTile(type: rightSide ? .LeftEdge : rightEdgeInsideNoWall, column: tileColumn+boxSize+1, row: insideEdgeRow)
+            setTile(type: rightSideOutside ? .LeftEdge : rightEdgeOutsideNoWall, column: tileColumn+boxSize+1, row: outsideEdgeRow)
         case .Left, .Right:
-            if tileColumn < 0 || tileColumn+boxSize >= numberOfColumns {
+            if (side == .Left && tileColumn < 0) || (side == .Right && tileColumn+boxSize+2 >= numberOfColumns) {
                 break
             }
             
@@ -283,8 +283,8 @@ class MazeTileMapNode: SKTileMapNode {
             let downSide = checkTileBox(side: .Down, column: box.x, row: box.y)
             let downSideOutside = checkTileBox(side: .Down, column: (side == .Left ? box.x-1 : box.x+1), row: box.y)
 
-            let outsideEdgeColumn = (side == .Left ? tileColumn-1 : tileColumn+boxSize+1)
-            let insideEdgeColumn = (side == .Left ? tileColumn : tileColumn+boxSize)
+            let outsideEdgeColumn = (side == .Left ? tileColumn-1 : tileColumn+boxSize+2)
+            let insideEdgeColumn = (side == .Left ? tileColumn : tileColumn+boxSize+1)
 
             let upEdgeInsideNoWall: TileType = (side == .Left ? .LowerRightEdge : .LowerLeftEdge)
             let upEdgeOutsideNoWall: TileType = (side == .Left ? .LowerLeftEdge : .LowerRightEdge)
@@ -292,12 +292,12 @@ class MazeTileMapNode: SKTileMapNode {
             let downEdgeOutsideNoWall: TileType = (side == .Left ? .UpperLeftEdge : .UpperRightEdge)
 
             //Up
-            setTile(type: upSide ? .DownEdge : upEdgeInsideNoWall, column: insideEdgeColumn, row: tileRow+boxSize)
-            setTile(type: upSideOutside ? .DownEdge : upEdgeOutsideNoWall,  column: outsideEdgeColumn, row: tileRow+boxSize)
+            setTile(type: upSide ? .DownEdge : upEdgeInsideNoWall, column: insideEdgeColumn, row: tileRow+boxSize+1)
+            setTile(type: upSideOutside ? .DownEdge : upEdgeOutsideNoWall,  column: outsideEdgeColumn, row: tileRow+boxSize+1)
             //Center
-            for r in tileRow+1...tileRow+boxSize-1 {
-                setTileGroup(nil, forColumn: insideEdgeColumn, row: r)
-                setTileGroup(nil, forColumn: outsideEdgeColumn, row: r)
+            for r in tileRow+1...tileRow+boxSize {
+                setTile(type: .None, column: insideEdgeColumn, row: r)
+                setTile(type: .None, column: outsideEdgeColumn, row: r)
             }
             //Down
             setTile(type: downSide ? .UpEdge : downEdgeInsideNoWall, column: insideEdgeColumn, row: tileRow)
