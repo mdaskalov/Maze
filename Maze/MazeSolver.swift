@@ -58,12 +58,13 @@ class MazeSolver {
     private func animateSolution(_ solution: [MazeTileMapNode.TileBox], animateCamera: Bool) {
         
         if solution.count > 1 {
-            let moveInterval = (animateCamera ? 0.5 : 0.1)
+            let moveInterval = (animateCamera ? 0.5 : 0.2)
             let rotateInterval = moveInterval / 4
             let blinkCount = 1
-            let blinkInterval = 0.2
-            let fadeInInterval = 0.15
-            let fadeOutInterval = 0.15
+            let blinkInterval = 0.20
+            let fadeInInterval = 0.20
+            let fadeOutInterval = 0.20
+            let fadeOutAlpha: CGFloat = 0.2
             let actionDelay: TimeInterval = (moveInterval) * Double(solution.count)
             
             let textures = animationTextures(baseName: "warrior_walk_", count: walkerFrames)
@@ -74,7 +75,7 @@ class MazeSolver {
                 )
             
             let pathAnimation = SKAction.sequence([
-                SKAction.wait(forDuration: actionDelay - fadeOutInterval),
+                SKAction.wait(forDuration: actionDelay),
                 SKAction.fadeOut(withDuration: fadeOutInterval),
                 SKAction.removeFromParent()
                 ])
@@ -84,7 +85,7 @@ class MazeSolver {
                     SKAction.fadeIn(withDuration: blinkInterval),
                     SKAction.fadeOut(withDuration: blinkInterval)
                     ]), count: blinkCount),
-                SKAction.fadeAlpha(to: 0.2, duration: fadeInInterval)
+                SKAction.fadeAlpha(to: fadeOutAlpha, duration: fadeInInterval)
                 ])
 
             moveNode.name = "Solution.move"
@@ -124,8 +125,8 @@ class MazeSolver {
             }
             moveAnimation.append(SKAction.removeFromParent())
             
-            startNode.run(pathAnimation)
-            endNode.run(pathAnimation)
+            startNode.run(SKAction.group([SKAction.repeatForever(SKAction.rotate(byAngle: 1, duration: fadeOutInterval)),pathAnimation]))
+            endNode.run(SKAction.group([SKAction.repeatForever(SKAction.rotate(byAngle: -1, duration: fadeOutInterval)),pathAnimation]))
             moveNode.run(SKAction.group([walkerAnimation,SKAction.sequence(rotationAnimation),SKAction.sequence(moveAnimation)]))
             if animateCamera {
                 self.scene.camera?.run(SKAction.sequence(moveAnimation))
