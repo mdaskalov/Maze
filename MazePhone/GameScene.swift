@@ -30,6 +30,9 @@ class GameScene: SKScene {
 
         let maze = MazeTileMapNode(columns: boxMapWidth, rows: boxMapHeight, boxSize: boxSize)
         
+        maze.position.x = 0
+        maze.position.y = 0
+        
         self.camera?.setScale(cameraScale)
         self.addChild(maze)
         self.maze = maze
