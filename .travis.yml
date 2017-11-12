@@ -6,7 +6,7 @@ branches:
 
 xcode_project: Maze.xcodeproj
 xcode_scheme: Maze
-osx_image: xcode8.2
+osx_image: xcode9.1
 
 script:
 - xcodebuild clean build -project Maze.xcodeproj -scheme Maze
