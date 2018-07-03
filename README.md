@@ -10,14 +10,18 @@ Usage: To reset and create a new maze use long press on iOS, force touch menu on
 
 # Screenshots
 
-Visualize the creation of the maze 
+![Video](screenshot-video.gif "Video")
+
+iPhone video
 
 ![Maze Creation](screenshot1.png "Maze Creation")
 
-Zoom in and scroll inside the generated maze (using Cobblestone TileSet for macOS and iOS)
+Visualize the creation of the maze 
 
 ![Maze Zoom-In](screenshot2.png "Zoom-In")
 
-Runs also on watchOS (Using Grass TileSet)
+Zoom in and scroll inside the generated maze (using Cobblestone TileSet for macOS and iOS)
 
 ![Watch Maze Creation](screenshot3.png "Maze Creation") ![Watch Zoom-In](screenshot4.png "Zoom-In")
+
+Runs also on watchOS (Using Grass TileSet)
