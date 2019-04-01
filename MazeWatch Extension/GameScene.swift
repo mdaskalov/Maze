@@ -65,7 +65,7 @@ class GameScene: SKScene {
         }
     }
     
-    func cutMaze() {
+    @objc func cutMaze() {
         if let box = maze?.cutStep() {
             drawBox(box, color: .blue)
         }
